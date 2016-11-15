@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="@string/SP_background_operation"
+        android:title="@string/background_operations"
+        android:summary="Summary"
+        android:defaultValue="true" />
+    <PreferenceCategory
+        android:title="@string/background_buttons">
+        <!-- Background Mode Video Button -->
+        <CheckBoxPreference
+            android:dependency="@string/SP_background_operation"
+            android:key="@string/SP_background_video_button"
+            android:title="@string/video_button"
+            android:defaultValue="true" />
+        <!-- Background Mode Microphone Button -->
+        <CheckBoxPreference
+            android:dependency="@string/SP_background_operation"
+            android:key="@string/SP_background_mic_button"
+            android:title="@string/microphone_button"
+            android:defaultValue="true" />
+        <!-- Background Mode Protect Button -->
+        <CheckBoxPreference
+            android:dependency="@string/SP_background_operation"
+            android:key="@string/SP_background_prot_button"
+            android:title="@string/prot_button"
+            android:defaultValue="true" />
+        <!-- Background Mode Photo Button -->
+        <CheckBoxPreference
+            android:dependency="@string/SP_background_operation"
+            android:key="@string/SP_background_photo_button"
+            android:title="@string/photo_button"
+            android:defaultValue="true" />
+        <!-- Background Mode Exit Button -->
+        <CheckBoxPreference
+            android:dependency="@string/SP_background_operation"
+            android:key="@string/SP_background_exit_button"
+            android:title="@string/exit_button"
+            android:defaultValue="true" />
+        <!-- Background Mode Move Button -->
+        <CheckBoxPreference
+            android:dependency="@string/SP_background_operation"
+            android:key="@string/SP_background_move_button"
+            android:title="@string/move_button"
+            android:summary="@string/move_button_explanation"
+            android:defaultValue="true" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/grouping_and_size">
+        <!-- Group Buttons -->
+        <ListPreference
+            android:dependency="@string/SP_background_operation"
+            android:key="@string/SP_background_group_buttons"
+            android:title="@string/group_buttons"
+            android:summary="Summary"
+            android:entries="@array/e_background_mode_group_buttons"
+            android:entryValues="@array/ev_background_mode_group_buttons"
+            android:defaultValue="0"
+            />
+        <!-- Buttons Size -->
+        <ListPreference
+            android:dependency="@string/SP_background_operation"
+            android:key="@string/SP_background_buttons_sizes"
+            android:title="@string/size_of_buttons"
+            android:summary="Summary"
+            android:entries="@array/e_background_mode_size_of_buttons"
+            android:entryValues="@array/ev_background_mode_size_of_buttons"
+            android:defaultValue="0"
+            />
+    </PreferenceCategory>
+</PreferenceScreen>

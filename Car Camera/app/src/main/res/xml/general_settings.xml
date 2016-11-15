@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- USE GPS SATTELITES -->
+    <ListPreference
+        android:key="@string/SP_general_gps_settings"
+        android:title="@string/use_gps_satellites"
+        android:summary="Summary"
+        android:defaultValue="0"
+        android:entries="@array/e_gps_satellite_types"
+        android:entryValues="@array/ev_gps_satellite_types"
+        />
+    <!-- KEEP SCREEN LOCKED -->
+    <CheckBoxPreference
+        android:key="@string/SP_general_screen_locked"
+        android:title="@string/keep_screen_locked"
+        android:summary="@string/after_turn_on_display"
+        android:defaultValue="false"
+        />
+    <!-- USE APPLICATION BRIGHTNESS -->
+    <CheckBoxPreference
+        android:key="@string/SP_general_brightness_seek_bar"
+        android:title="@string/use_aplication_brightness"
+        android:summary="@string/use_independent_brightness"
+        android:defaultValue="false"
+        />
+    <!-- preferences.xml  SLIDER for Brightness -->
+    <net.jayschwa.android.preference.SliderPreference
+        android:dependency="@string/SP_general_brightness_seek_bar"
+        android:key="@string/SP_general_brightness_seek_bar_intensity"
+        android:title="@string/brightness_slider_title"
+        android:summary="@array/slider_summaries"
+        android:defaultValue="@string/brightness_slider_default"
+        android:dialogMessage="@string/brightness_slider_message"
+        />
+    <!-- BACK BUTTON -->
+    <ListPreference
+        android:key="@string/SP_general_back_button"
+        android:title="Back Button Action"
+        android:summary="Summary"
+        android:defaultValue="0"
+        android:entries="@array/e_back_button"
+        android:entryValues="@array/ev_back_button"
+        />
+</PreferenceScreen>

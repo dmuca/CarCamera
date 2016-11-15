@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ############################################# SETTINGS STRINGS(ENTRY VALUES) ############################################# -->
+    <!-- ************************ GENERAL SETTINGS ************************ -->
+    <!-- GPS type entries -->
+    <string-array name="ev_gps_satellite_types">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <!-- back button entries -->
+    <string-array name="ev_back_button">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+    <!-- ************************ Camera SETTINGS ************************ -->
+    <!-- orientation -->
+    <string-array name="ev_orientation">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
+    <!-- camera mode -->
+    <string-array name="ev_cam_mode">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+    <!-- scene mode -->
+    <!--<string-array name="ev_cam_scene_mode">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+    </string-array>-->
+    <!-- camera white balance -->
+    <!--<string-array name="ev_cam_white_balance">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>-->
+    <!-- camera exposure compensation -->
+    <!--<string-array name="ev_cam_exposure_compensation">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>-->
+    <!-- camera antibanding -->
+    <!--<string-array name="ev_cam_antibanding">
+        <item>0</item>
+        <item>1</item>
+    </string-array>-->
+    <!-- camera falling in case of error -->
+    <string-array name="ev_cam_falling_in_case_of_error">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <!-- ************************ Video SETTINGS ************************ -->
+    <!-- orientation -->
+    <string-array name="ev_video_quality">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <!-- custom - video resolution -->
+    <string-array name="ev_video_custom_resolution">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+    </string-array>
+    <!-- custom - Bitrate -->
+    <string-array name="ev_video_custom_bitrate">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+    <!-- Video Camera Operation -->
+    <string-array name="e_video_camera_operation">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <!-- custom - Framerate -->
+    <string-array name="ev_video_custom_framerate">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+    <!-- custom - File Format -->
+    <string-array name="ev_video_custom_file_format">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <!-- Video File Length -->
+    <string-array name="ev_video_file_length">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <!-- Video protection -->
+    <string-array name="ev_video_files_protection">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+
+
+
+
+
+    <!-- ************************************************ Photo SETTINGS ************************************************ -->
+    <!-- Photo Snapshot Frequency -->
+    <string-array name="ev_photo_snapshot_frequency">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+    </string-array>
+    <!-- Photo Focus Mode -->
+    <string-array name="ev_photo_focus_mode">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+
+
+    <!-- ************************************************ Background Mode SETTINGS ************************************************ -->
+    <!-- Photo Focus Mode -->
+    <string-array name="ev_background_mode_group_buttons">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <!-- Photo Buttons Sizes -->
+    <string-array name="ev_background_mode_size_of_buttons">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+
+    <!-- ************************************************ Automatic Mode SETTINGS ************************************************ -->
+    <!-- Photo Focus Mode -->
+    <string-array name="ev_automod_start_when_charging">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+    <!-- Exit when charger is disconnected -->
+    <string-array name="ev_automod_exit_when_charger_disconnected">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+
+    <!-- ************************************************ FORMATTING & DISPLAZ ************************************************ -->
+    <!-- Formatting and Display Date Format -->
+    <string-array name="ev_fad_date_format">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+    <!-- Formatting and Display Units -->
+    <string-array name="ev_fad_units">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <!-- Formatting and Display - SPEED -->
+    <string-array name="ev_fad_speed">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+    <!-- Formatting and Display - ELEVATION -->
+    <string-array name="ev_fad_elevation">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+</resources>

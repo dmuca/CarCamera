@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Date Format -->
+    <ListPreference
+        android:key="@string/SP_fds_date_format"
+        android:title="@string/date_format"
+        android:summary="Summary"
+        android:defaultValue="0"
+        android:entries="@array/e_fad_date_format"
+        android:entryValues="@array/ev_fad_date_format"
+        />
+    <!-- UNITS -->
+    <ListPreference
+        android:key="@string/SP_fds_units"
+        android:title="@string/units"
+        android:summary="Summary"
+        android:defaultValue="0"
+        android:entries="@array/e_fad_units"
+        android:entryValues="@array/ev_fad_units"
+        />
+    <PreferenceCategory
+        android:title="Display on main screen">
+        <!-- Speed -->
+        <ListPreference
+            android:key="@string/SP_fds_speed"
+            android:title="@string/speed"
+            android:summary="Summary"
+            android:defaultValue="0"
+            android:entries="@array/e_fad_speed"
+            android:entryValues="@array/ev_fad_speed"
+            />
+        <!-- Elevation -->
+        <ListPreference
+            android:key="@string/SP_fds_elevation"
+            android:title="@string/elevation"
+            android:summary="Summary"
+            android:defaultValue="0"
+            android:entries="@array/e_fad_elevation"
+            android:entryValues="@array/ev_fad_elevation"
+            />
+        <!-- GPS coordinates -->
+        <ListPreference
+            android:key="@string/SP_gps_coordinates"
+            android:title="@string/gps_coordinates"
+            android:summary="Summary"
+            android:defaultValue="0"
+            android:entries="@array/e_fad_elevation"
+            android:entryValues="@array/ev_fad_elevation"
+            />
+        <!-- Viewfinder -->
+        <CheckBoxPreference
+            android:key="@string/SP_viewfinder"
+            android:title="@string/viewfinder"
+            android:defaultValue="true"
+            />
+        <!-- Transparency -->
+        <net.jayschwa.android.preference.SliderPreference
+            android:key="@string/SP_transparency"
+            android:title="@string/transparency"
+            android:summary="@array/slider_summaries"
+            android:defaultValue="@string/brightness_slider_default"
+            android:dialogMessage="@string/brightness_slider_message"
+            />
+    </PreferenceCategory>
+    <!-- Display on recorded video -->
+    <PreferenceCategory
+        android:title="@string/display_on_recorded_video">
+        <!-- Speed -->
+        <ListPreference
+            android:key="@string/SP_fds_rec_video_speed"
+            android:title="@string/speed"
+            android:summary="Summary"
+            android:defaultValue="0"
+            android:entries="@array/e_fad_speed"
+            android:entryValues="@array/ev_fad_speed"
+            />
+        <!-- Elevation -->
+        <ListPreference
+            android:key="@string/SP_fds_rec_video_elevation"
+            android:title="@string/elevation"
+            android:summary="Summary"
+            android:defaultValue="0"
+            android:entries="@array/e_fad_elevation"
+            android:entryValues="@array/ev_fad_elevation"
+            />
+        <!-- GPS coordinates -->
+        <ListPreference
+            android:key="@string/SP_rec_video_gps_coordinates"
+            android:title="@string/gps_coordinates"
+            android:summary="Summary"
+            android:defaultValue="0"
+            android:entries="@array/e_fad_elevation"
+            android:entryValues="@array/ev_fad_elevation"
+            />
+    </PreferenceCategory>
+    <!-- Display on Photos -->
+    <PreferenceCategory
+        android:title="@string/display_on_photos">
+        <!-- Elevation -->
+        <ListPreference
+            android:key="@string/SP_fds_take_pht_elevation"
+            android:title="@string/elevation"
+            android:summary="Summary"
+            android:defaultValue="0"
+            android:entries="@array/e_fad_elevation"
+            android:entryValues="@array/ev_fad_elevation"
+            />
+        <!-- GPS coordinates -->
+        <ListPreference
+            android:key="@string/SP_take_pht_gps_coordinates"
+            android:title="@string/gps_coordinates"
+            android:summary="Summary"
+            android:defaultValue="0"
+            android:entries="@array/e_fad_elevation"
+            android:entryValues="@array/ev_fad_elevation"
+            />
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/video_quality">
+        <!-- Video Quality -->
+        <ListPreference
+            android:key="@string/SP_video_quality"
+            android:title="@string/video_quality"
+            android:entries="@array/e_video_quality"
+            android:entryValues="@array/ev_video_quality"
+            android:summary="Summary"
+            android:defaultValue="0" />
+        <!-- Custom - Video Resolution -->
+        <ListPreference
+            android:key="@string/SP_video_resolution"
+            android:title="@string/video_resolution"
+            android:entries="@array/e_video_custom_resolution"
+            android:entryValues="@array/ev_video_custom_resolution"
+            android:summary="Summary"
+            android:defaultValue="10" />
+        <!-- Custom - Video Encoder -->
+        <ListPreference
+            android:key="@string/SP_video_encoder"
+            android:title="@string/video_encoder"
+            android:entries="@array/e_video_custom_encoder"
+            android:summary="Summary"
+            android:defaultValue="0" />
+        <!-- Custom - Bitrate -->
+        <ListPreference
+            android:key="@string/SP_video_bitrate"
+            android:title="@string/bitrate"
+            android:entries="@array/e_video_custom_bitrate"
+            android:entryValues="@array/ev_video_custom_bitrate"
+            android:summary="Summary"
+            android:defaultValue="0" />
+        <!-- Framerate -->
+        <ListPreference
+            android:key="@string/SP_video_framerate"
+            android:title="@string/framerate"
+            android:entries="@array/e_video_custom_framerate"
+            android:entryValues="@array/ev_video_custom_framerate"
+            android:summary="Summary"
+            android:defaultValue="0" />
+        <!-- File Format -->
+        <ListPreference
+            android:key="@string/SP_video_file_format"
+            android:title="@string/file_format"
+            android:entries="@array/e_video_custom_file_format"
+            android:entryValues="@array/ev_video_custom_file_format"
+            android:summary="Summary"
+            android:defaultValue="0" />
+        <!-- Focus Mode -->
+        <ListPreference
+            android:key="@string/SP_video_focus_mode"
+            android:title="@string/focus_mode"
+            android:summary="Summary"
+            android:defaultValue="0" />
+    </PreferenceCategory>
+
+
+
+
+
+    <!-- Preference Category: Stability, Length, Sound and Protection Options -->
+    <PreferenceCategory
+        android:title="@string/video_settings_second_section">
+        <!-- Camera Operation -->
+        <ListPreference
+            android:key="@string/SP_video_camera_operation"
+            android:title="@string/video_camera_operation"
+            android:entryValues="@array/e_video_camera_operation"
+            android:entries="@array/ev_video_camera_operation"
+            android:summary="Summary"
+            android:defaultValue="0"
+            />
+        <!-- Stabilization -->
+        <CheckBoxPreference
+            android:key="@string/SP_video_stabilization"
+            android:title="@string/video_stabilization"
+            android:summary="@string/reduce_shaking___"
+            android:defaultValue="false"
+            />
+        <!-- Video File Length -->
+        <ListPreference
+            android:key="@string/SP_video_length_per_file"
+            android:title="@string/video_file_length"
+            android:entryValues="@array/ev_video_file_length"
+            android:entries="@array/e_video_file_length"
+            android:defaultValue="5"
+            />
+        <!-- Enable Video Sound Capture -->
+        <CheckBoxPreference
+            android:key="@string/SP_is_volume_enable"
+            android:title="@string/volume"
+            android:summary="@string/enable_volume_of_capture_sound"
+            android:defaultValue="true"
+            />
+        <!-- Video Protection (above some force) -->
+        <ListPreference
+            android:key="@string/SP_video_protection_force"
+            android:title="Protect Video Files When Occurs"
+            android:dialogTitle="@string/protect_files_when___"
+            android:entries="@array/e_video_files_protection"
+            android:entryValues="@array/ev_video_files_protection"
+            android:summary="Summary"
+            android:defaultValue="2"
+            />
+    </PreferenceCategory>
+</PreferenceScreen>

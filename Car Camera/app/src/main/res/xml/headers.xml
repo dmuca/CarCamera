@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- GENERAL SETTINGS -->
+    <header
+        android:fragment="com.damianmuca.hoymm.kamerkasamochodowa.GeneralSettings"
+        android:title="@string/general"
+        android:summary="@string/general_settings_summaries">
+    </header>
+    <!-- CAMERA SETTINGS -->
+    <header
+        android:fragment="com.damianmuca.hoymm.kamerkasamochodowa.CameraSettings"
+        android:title="@string/camera"
+        android:summary="@string/camera_subsettings" >
+    </header>
+    <!-- VIDEO SETTINGS -->
+    <header
+        android:fragment="com.damianmuca.hoymm.kamerkasamochodowa.VideoSettings"
+        android:title="@string/video"
+        android:summary="@string/video_subsettings" >
+    </header>
+    <!-- PHOTO SETTINGS -->
+    <header
+        android:fragment="com.damianmuca.hoymm.kamerkasamochodowa.PhotoSettings"
+        android:title="@string/photo"
+        android:summary="@string/photo_subsettings" >
+    </header>
+    <!-- BACKGROUND MODE SETTINGS -->
+    <header
+        android:fragment="com.damianmuca.hoymm.kamerkasamochodowa.BackgroundModeSettings"
+        android:title="@string/background_mode"
+        android:summary="@string/background_subsettings" >
+    </header>
+    <!-- AUTOMATIC PROCESSES SETTINGS -->
+    <header
+        android:fragment="com.damianmuca.hoymm.kamerkasamochodowa.AutomaticSettings"
+        android:title="@string/automatic_processes"
+        android:summary="@string/automatic_mode_subsettings" >
+    </header>
+    <!-- FORMATING & DISPLAY -->
+    <header
+        android:fragment="com.damianmuca.hoymm.kamerkasamochodowa.FormattingAndDisplaySettings"
+        android:title="Formatting &amp; display"
+        android:summary="@string/formatting_and_display_subsettings" >
+    </header>
+    <!-- OVERLAYS -->
+    <header
+        android:fragment="com.damianmuca.hoymm.kamerkasamochodowa.OverlaySettings"
+        android:title="@string/overlays"
+        android:summary="@string/overlays_subsettings" >
+    </header>
+</preference-headers>

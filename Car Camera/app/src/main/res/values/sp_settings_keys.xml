@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <!--        SHARED PREFERENCES SETTINGS         -->
+    <!-- ############### 1            general settings -->
+    <string name="SP_general_gps_settings">SP_com.damianmuca.hoymm.kamerkasamochodowa.GPS_settings_prefers</string>
+    <string name="SP_general_screen_locked">SP_com.damianmuca.hoymm.kamerkasamochodowa.screen_locked</string>
+    <string name="SP_general_brightness_seek_bar">SP_com.damianmuca.hoymm.kamerkasamochodowa.brightness.SEEKBAR_VALUE</string>
+    <string name="SP_general_brightness_seek_bar_intensity">SP_com.damianmuca.hoymm.kamerkasamochodowa.brightness.SEEKBAR_VALUE_INTENSITY</string>
+    <string name="SP_general_back_button">SP_com.damianmuca.hoymm.kamerkasamochodowa.back_button</string>
+
+    <!-- ############### 2           camera settings -->
+    <string name="SP_orientation">SP_com.damianmuca.hoymm.kamerkasamochodowa.orientation</string>
+    <string name="SP_camera_mode">SP_com.damianmuca.hoymm.kamerkasamochodowa.camera_mode</string>
+
+        <!-- General Keys for CAMERA MODE subsettings -->
+    <string name="SP_scene_mode">SP_com.damianmuca.hoymm.kamerkasamochodowa.scene_mode</string>
+    <string name="SP_camera_white_balance">SP_com.damianmuca.hoymm.kamerkasamochodowa.camera_white_balance</string>
+    <string name="SP_camera_exposure_compensation">SP_com.damianmuca.hoymm.kamerkasamochodowa.camera_exposure_compensation</string>
+    <string name="SP_camera_antibanding">SP_com.damianmuca.hoymm.kamerkasamochodowa.camera_antibanding</string>
+    <string name="SP_camera_falling_in_case_of_error">SP_com.damianmuca.hoymm.kamerkasamochodowa.camera_falling_in_case_of_error</string>
+
+
+
+
+        <!-- PREFERENCES SETTINGS -->
+            <!-- Keys For Daylight CAMERA MODE -->
+    <string name="SP_scene_mode_daylight">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_scene_mode_daylight</string>
+    <string name="SP_camera_white_balance_daylight">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_white_balance_daylight</string>
+    <string name="SP_camera_exposure_compensation_daylight">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_exposure_compensation_daylight</string>
+    <string name="SP_camera_antibanding_daylight">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_antibanding_daylight</string>
+    <string name="SP_camera_falling_in_case_of_error_daylight">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_falling_in_case_of_error_daylight</string>
+             <!-- Keys For SUNNY CAMERA MODE -->
+    <string name="SP_scene_mode_sunny">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_scene_mode_sunny</string>
+    <string name="SP_camera_white_balance_sunny">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_white_balance_sunny</string>
+    <string name="SP_camera_exposure_compensation_sunny">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_exposure_compensation_sunny</string>
+    <string name="SP_camera_antibanding_sunny">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_antibanding_sunny</string>
+    <string name="SP_camera_falling_in_case_of_error_sunny">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_falling_in_case_of_error_sunny</string>
+            <!-- Keys For Cloudy CAMERA MODE -->
+    <string name="SP_scene_mode_cloudy">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_scene_mode_cloudy</string>
+    <string name="SP_camera_white_balance_cloudy">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_white_balance_cloudy</string>
+    <string name="SP_camera_exposure_compensation_cloudy">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_exposure_compensation_cloudy</string>
+    <string name="SP_camera_antibanding_cloudy">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_antibanding_cloudy</string>
+    <string name="SP_camera_falling_in_case_of_error_cloudy">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_falling_in_case_of_error_cloudy</string>
+            <!-- Keys For Twilight CAMERA MODE -->
+    <string name="SP_scene_mode_twilght">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_scene_mode_twilght</string>
+    <string name="SP_camera_white_balance_twilght">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_white_balance_twilght</string>
+    <string name="SP_camera_exposure_compensation_twilght">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_exposure_compensation_twilght</string>
+    <string name="SP_camera_antibanding_twilght">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_antibanding_twilght</string>
+    <string name="SP_camera_falling_in_case_of_error_twilght">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_falling_in_case_of_error_twilght</string>
+            <!-- Keys For Dark Night CAMERA MODE -->
+    <string name="SP_scene_mode_dn">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_scene_mode_dn</string>
+    <string name="SP_camera_white_balance_dn">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_white_balance_dn</string>
+    <string name="SP_camera_exposure_compensation_dn">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_exposure_compensation_dn</string>
+    <string name="SP_camera_antibanding_dn">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_antibanding_dn</string>
+    <string name="SP_camera_falling_in_case_of_error_dn">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_falling_in_case_of_error_dn</string>
+            <!-- Keys For City Night CAMERA MODE -->
+    <string name="SP_scene_mode_cn">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_scene_mode_cn</string>
+    <string name="SP_camera_white_balance_cn">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_white_balance_cn</string>
+    <string name="SP_camera_exposure_compensation_cn">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_exposure_compensation_cn</string>
+    <string name="SP_camera_antibanding_cn">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_antibanding_cn</string>
+    <string name="SP_camera_falling_in_case_of_error_cn">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_falling_in_case_of_error_cn</string>
+            <!-- Keys For Custom CAMERA MODE -->
+    <string name="SP_scene_mode_custom">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_scene_mode_custom</string>
+    <string name="SP_camera_white_balance_custom">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_white_balance_custom</string>
+    <string name="SP_camera_exposure_compensation_custom">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_exposure_compensation_custom</string>
+    <string name="SP_camera_antibanding_custom">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_antibanding_custom</string>
+    <string name="SP_camera_falling_in_case_of_error_custom">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_camera_falling_in_case_of_error_custom</string>
+
+
+
+
+
+
+    <!-- ############### 3            video settings -->
+    <string name="SP_video_quality">SP_com.damianmuca.hoymm.kamerkasamochodowa.video_quality</string>
+    <string name="SP_video_resolution">SP_com.damianmuca.hoymm.kamerkasamochodowa.video_resolution</string>
+    <string name="SP_video_encoder">SP_com.damianmuca.hoymm.kamerkasamochodowa.video_encoder</string>
+    <string name="SP_video_bitrate">SP_com.damianmuca.hoymm.kamerkasamochodowa.video_bitrate</string>
+    <string name="SP_video_framerate">SP_com.damianmuca.hoymm.kamerkasamochodowa.video_framerate</string>
+    <string name="SP_video_file_format">SP_com.damianmuca.hoymm.kamerkasamochodowa.video_file_format</string>
+    <string name="SP_video_focus_mode">SP_com.damianmuca.hoymm.kamerkasamochodowa.video_focus_mode</string>
+    <string name="SP_video_camera_operation">SP_com.damianmuca.hoymm.kamerkasamochodowa.video_camera_operation</string>
+    <string name="SP_video_stabilization">SP_com.damianmuca.hoymm.kamerkasamochodowa.video_camera_stabilization</string>
+    <string name="SP_video_length_per_file">SP_com.damianmuca.hoymm.kamerkasamochodowa.video_length_per_file</string>
+    <string name="SP_is_volume_enable">SP_com.damianmuca.hoymm.kamerkasamochodowa.is_volume_enable</string>
+    <string name="SP_video_protection_force">SP_com.damianmuca.hoymm.kamerkasamochodowa.video_protection_force</string>
+
+
+        <!-- Shared Preferences for CUSTOM MODE (user own mode) -->
+    <string name="SP_video_custom_resolution">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_video_custom_resolution</string>
+    <string name="SP_video_custom_encoder">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_video_custom_encoder</string>
+    <string name="SP_video_custom_bitrate">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_video_custom_bitrate</string>
+    <string name="SP_video_custom_framerate">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_video_custom_framerate</string>
+    <string name="SP_video_custom_file_format">SP_com.damianmuca.hoymm.kamerkasamochodowa.SP_video_custom_file_format</string>
+
+    <!-- ############### 4            photo settings -->
+    <string name="SP_photo_resolution">SP_com.damianmuca.hoymm.kamerkasamochodowa.photo_resolution</string>
+    <string name="SP_photo_snapshot_frequency">SP_com.damianmuca.hoymm.kamerkasamochodowa.photo_snapshot_frequency</string>
+    <string name="SP_photo_focus_mode">SP_com.damianmuca.hoymm.kamerkasamochodowa.photo_focus_mode</string>
+    <string name="SP_photo_create_thumbnails">SP_com.damianmuca.hoymm.kamerkasamochodowa.photo_create_thumbnails</string>
+
+    <!-- ############### 5            background settings -->
+    <string name="SP_background_operation">SP_com.damianmuca.hoymm.kamerkasamochodowa.background_operation</string>
+    <string name="SP_background_video_button">SP_com.damianmuca.hoymm.kamerkasamochodowa.background_video_button</string>
+    <string name="SP_background_mic_button">SP_com.damianmuca.hoymm.kamerkasamochodowa.background_mic_button</string>
+    <string name="SP_background_prot_button">SP_com.damianmuca.hoymm.kamerkasamochodowa.background_prot_button</string>
+    <string name="SP_background_photo_button">SP_com.damianmuca.hoymm.kamerkasamochodowa.background_photo_button</string>
+    <string name="SP_background_exit_button">SP_com.damianmuca.hoymm.kamerkasamochodowa.background_exit_button</string>
+    <string name="SP_background_move_button">SP_com.damianmuca.hoymm.kamerkasamochodowa.background_move_button</string>
+    <string name="SP_background_group_buttons">SP_com.damianmuca.hoymm.kamerkasamochodowa.background_group_buttons</string>
+    <string name="SP_background_buttons_sizes">SP_com.damianmuca.hoymm.kamerkasamochodowa.background_buttons_sizes</string>
+
+    <!-- ############### 6            Automatic Mode settings -->
+    <string name="SP_automod_start_when_charg">SP_com.damianmuca.hoymm.kamerkasamochodowa.automod_start_when_charg</string>
+    <string name="SP_automod_start_in_background">SP_com.damianmuca.hoymm.kamerkasamochodowa.automod_start_in_background</string>
+    <string name="SP_automod_start_video_rec">SP_com.damianmuca.hoymm.kamerkasamochodowa.automod_start_video_rec</string>
+    <string name="SP_automod_start_photo_capturing">SP_com.damianmuca.hoymm.kamerkasamochodowa.automod_start_photo_capturing</string>
+    <string name="SP_automod_detect_car_dock">SP_com.damianmuca.hoymm.kamerkasamochodowa.automod_detect_car_dock</string>
+    <string name="SP_automod_exit_when_no_charger">SP_com.damianmuca.hoymm.kamerkasamochodowa.automod_exit_when_no_charg</string>
+    <string name="SP_automod_exit_when_low_battery">SP_com.damianmuca.hoymm.kamerkasamochodowa.automod_exit_when_low_battery</string>
+    <string name="SP_automod_pause_when_charger_disconnected">SP_com.damianmuca.hoymm.kamerkasamochodowa.automod_pause_when_charg_disc</string>
+    <string name="SP_automod_pause_when_low_battery_is_detected">SP_com.damianmuca.hoymm.kamerkasamochodowa.automod_pause_when_charg_disc</string>
+    <string name="SP_automod_resume_automatically">SP_com.damianmuca.hoymm.kamerkasamochodowa.automod_resume_automatically</string>
+    <string name="SP_automod_play_warning_sound">SP_com.damianmuca.hoymm.kamerkasamochodowa.automod_play_warning_sound</string>
+
+    <!-- ############### 7            Formatting and Display settings -->
+    <string name="SP_fds_date_format">SP_com.damianmuca.hoymm.kamerkasamochodowa.fds_date_format</string>
+    <string name="SP_fds_units">SP_com.damianmuca.hoymm.kamerkasamochodowa.fds_units</string>
+    <string name="SP_fds_rec_video_speed">SP_com.damianmuca.hoymm.kamerkasamochodowa.fds_rec_video_speed</string>
+    <string name="SP_fds_speed">SP_com.damianmuca.hoymm.kamerkasamochodowa.fds_speed</string>
+    <string name="SP_fds_rec_video_elevation">SP_com.damianmuca.hoymm.kamerkasamochodowa.fds_rec_video_elevation</string>
+    <string name="SP_fds_take_pht_elevation">SP_com.damianmuca.hoymm.kamerkasamochodowa.fds_take_pht_elevation</string>
+    <string name="SP_fds_elevation">SP_com.damianmuca.hoymm.kamerkasamochodowa.fds_elevation</string>
+    <string name="SP_rec_video_gps_coordinates">SP_com.damianmuca.hoymm.kamerkasamochodowa.rec_video_gps_coordinates</string>
+    <string name="SP_take_pht_gps_coordinates">SP_com.damianmuca.hoymm.kamerkasamochodowa.take_pht_gps_coordinates</string>
+    <string name="SP_gps_coordinates">SP_com.damianmuca.hoymm.kamerkasamochodowa.gps_coordinates</string>
+    <string name="SP_viewfinder">SP_com.damianmuca.hoymm.kamerkasamochodowa.viewfinder</string>
+    <string name="SP_transparency">SP_com.damianmuca.hoymm.kamerkasamochodowa.transparency</string>
+</resources>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#1b4acc</color>
+    <color name="colorPrimaryDark">#303f9f</color>
+    <color name="colorAccent">#FF4081</color>
+
+
+
+
+
+
+
+
+    <color name="transparentColor">#00000000</color>
+    <color name="redColor">#e20000</color>
+    <color name="yellowColor">#ffdd00</color>
+    <color name="photoTakenColor">#4bffffff</color>
+
+    <!-- TEXT OVER CAMERA COLOR -->
+    <color name="textOverCameraColor">#ff7b00</color>
+    <color name="secondtextOverCameraColor">#ffffff</color>
+
+    <!-- BOTTOM PANEL CAMERA -->
+    <color name="layoutColor">#464641</color>
+        <!-- button -->
+    <color name="bgBottomPanelButtonNormal">#46463e</color>
+    <color name="bgBottomPanelButtonClicked">#e99d11</color>
+    <!-- options menu -->
+    <color name="optionsMenuBackgroundColor">#46463e</color>
+</resources>

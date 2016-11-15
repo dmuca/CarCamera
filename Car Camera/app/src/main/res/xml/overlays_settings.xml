@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/auto_start">
+        <!-- Start when charger is connected -->
+        <ListPreference
+            android:title="@string/start_when_charger_is_connected"
+            android:summary="Summary"
+            android:key="@string/SP_automod_start_when_charg"
+            android:entries="@array/e_automod_start_when_charging"
+            android:entryValues="@array/ev_automod_start_when_charging"
+            android:defaultValue="0"/>
+        <!-- Start in background -->
+        <CheckBoxPreference
+            android:key="@string/SP_automod_start_in_background"
+            android:title="@string/start_in_background"
+            android:summary="Summary"
+            android:defaultValue="False"
+            />
+        <!-- Start Video Recording -->
+        <CheckBoxPreference
+            android:key="@string/SP_automod_start_video_rec"
+            android:title="@string/start_video_recording"
+            android:defaultValue="False"
+            />
+        <!-- Start Photo Capturing -->
+        <CheckBoxPreference
+            android:key="@string/SP_automod_start_photo_capturing"
+            android:title="@string/start_photo_capturing"
+            android:defaultValue="False"
+            />
+    </PreferenceCategory>
+</PreferenceScreen>

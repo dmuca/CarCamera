@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context="com.damianmuca.hoymm.kamerkasamochodowa.MainActivity"
+    android:background="#46463e"
+    >
+
+
+    <!-- FOREGROUND CONTROL PANEL and CAMERA VIEW -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="100"
+        >
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="9"/>
+        <!-- CAMERA LIVE VIEW -->
+        <FrameLayout
+            android:id="@+id/camera_preview"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="76"
+            />
+
+        <!-- Bottom BUTTONS -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="15"
+            android:orientation="horizontal"
+            android:background="@color/layoutColor"
+            android:weightSum="302"
+            >
+            <!-- First bottom panel Button -->
+            <LinearLayout
+                style="@style/bottomLLPanelButtonStyle"
+                android:clickable="true"
+                android:onClick="changeModeButtonClicked"
+                android:id="@+id/change_mode_button_id"
+                android:gravity="center|bottom"
+                android:background = "@drawable/bottom_panel_button_color_clickable"
+                >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:id="@+id/change_mode_button_img_id"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/modes"
+                    />
+                <TextView
+                    style="@style/menuTextViewStyle"
+                    android:id="@+id/change_mode_button_tv_id"
+                    android:text="@string/mode"
+                    />
+            </LinearLayout>
+            <!-- Second bottom panel Button -->
+            <RelativeLayout
+                style="@style/bottomLLPanelButtonStyle"
+                android:clickable="true"
+                android:id="@+id/photocamera_button_bg_id"
+                android:background = "@drawable/bottom_panel_button_color_clickable"
+                android:onClick="pictureMakingButtonClicked"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:weightSum="100"
+                    android:gravity="center|bottom"
+                    android:orientation="vertical"
+                    >
+                    <!-- Photocamera Icon -->
+                    <ImageView
+                        android:src="@mipmap/photocamera"
+                        android:layout_width="wrap_content"
+                        android:id="@+id/photo_cam_icon_id"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        />
+                    <TextView
+                        style="@style/menuTextViewStyle"
+                        android:text="@string/camera"
+                        />
+                </LinearLayout>
+                <!-- Speaker (Sound when picture shoot) icon -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:weightSum="100"
+                    android:orientation="vertical"
+                    >
+                    <ImageView
+                        android:layout_gravity="right"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="40"
+                        android:padding="4dp"
+                        android:onClick="photoSoundButtonClicked"
+                        android:src="@mipmap/speaker_enabled"
+                        android:id="@+id/iv_speaker"
+                        />
+                </LinearLayout>
+            </RelativeLayout>
+            <!-- Third bottom panel Button -->
+            <RelativeLayout
+                style="@style/bottomLLPanelButtonStyle"
+                android:clickable="true"
+                android:id="@+id/videocamera_button_bg_id"
+                android:onClick="videoMakingButtonClicked"
+                android:background = "@drawable/bottom_panel_button_color_clickable"
+                >
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:weightSum="100"
+                    android:gravity="center|bottom"
+                    android:orientation="vertical"
+                    >
+                    <!-- Photocamera Icon -->
+                    <ImageView
+                        android:src="@mipmap/video_camera"
+                        android:layout_width="wrap_content"
+                        android:id="@+id/video_cam_icon_id"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        />
+                    <TextView
+                        style="@style/menuTextViewStyle"
+                        android:text="@string/video"
+                        />
+                </LinearLayout>
+                <!-- Speaker (Sound when picture shoot) icon -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:weightSum="100"
+                    android:orientation="vertical"
+                    >
+                    <ImageView
+                        android:layout_gravity="right"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="40"
+                        android:padding="4dp"
+                        android:onClick="microphoneButtonClicked"
+                        android:src="@mipmap/microphone_active"
+                        android:id="@+id/iv_micro"
+                        />
+                </LinearLayout>
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- VIEWFINDER and TEXT OVER CAM VIEW-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/llMain"
+        android:background="@color/transparentColor"
+        android:weightSum="100"
+        android:gravity="top|center"
+        >
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="9"
+            />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="76">
+            <!-- Text Over Camera VIEW FINDER -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:weightSum="100"
+                >
+                <!-- GPS Icon / Speed km/h text -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="20"
+                    android:orientation="horizontal"
+                    android:weightSum="100"
+                    >
+                    <!-- GPS Icon -->
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:paddingLeft="5dp"
+                        android:paddingTop="15dp"
+                        android:paddingBottom="15dp"
+                        android:layout_weight="20"
+                        android:src="@mipmap/gps_icon"
+                        />
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="45"
+                        />
+                    <!-- Speed Text -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="27"
+                        android:orientation="horizontal"
+                        android:gravity="bottom|left"
+                        >
+                        <TextView
+                            style="@style/whiteTextOverCamera"
+                            android:text="60 "
+                            android:gravity="bottom|left"
+                            android:id="@+id/kilometers_text_view_id"
+                            android:textSize="22sp"
+                            />
+                        <TextView
+                            style="@style/orangeTextOverCamera"
+                            android:text="km/h"
+                            android:textSize="22sp"
+                            android:gravity="bottom|left"
+                            />
+                    </LinearLayout>
+                </LinearLayout>
+                <!-- Lat/Long text -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="44"
+                    android:orientation="horizontal"
+                    android:weightSum="100"
+                    >
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="65"/>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="35"
+                        android:orientation="vertical"
+                        >
+                        <!-- Latitude Text -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            >
+                            <TextView
+                                style="@style/whiteTextOverCamera"
+                                android:text="@string/lat"
+                                android:textSize="16sp"
+                                />
+                            <TextView
+                                style="@style/orangeTextOverCamera"
+                                android:text="1,233"
+                                android:id="@+id/latitude_text_view_id"
+                                android:textSize="16sp"
+                                />
+                        </LinearLayout>
+                        <!-- Longtitude Text -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            >
+                            <TextView
+                                android:text="@string/long_"
+                                style="@style/whiteTextOverCamera"
+                                android:textSize="16sp"
+                                />
+                            <TextView
+                                android:text="1,233"
+                                android:id="@+id/longtitude_text_view_id"
+                                style="@style/orangeTextOverCamera"
+                                android:textSize="16sp"
+                                />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- REC text / Photo Shooting counter -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="25"
+                    android:orientation="horizontal"
+                    android:weightSum="100"
+                    >
+                    <!-- Empty Space -->
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="18"/>
+                    <!-- Recording Time -->
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="17"
+                        android:gravity="bottom|left"
+                        >
+                        <!--    RECORDING TIME -->
+                        <TextView
+                            style="@style/timeRecordingTextOverCamera"
+                            android:text="00:00"
+                            android:id="@+id/tv_time_recording"
+                            android:visibility="visible"
+                            />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center"
+                            >
+                            <!--     REC'ording RED CIRCLE -->
+                            <View
+                                style="@style/REC_circle"
+                                android:id="@+id/red_record_circle"
+                                android:visibility="visible"
+                                />
+                            <!--     REC'ording RED TEXT -->
+                            <TextView
+                                style="@style/REC_TextOverCamera"
+                                android:text="@string/REC"
+                                android:textColor="@color/redColor"
+                                android:id="@+id/tv_record"
+                                android:visibility="visible"
+                                />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <!-- Empty Space -->
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="32"/>
+                    <!-- Recording Time -->
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="35"
+                        android:gravity="bottom|left"
+                        >
+                        <!--    TIME TO TAKE PHOTO TEXT -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="22sp"
+                            android:text="00 sec"
+                            android:textColor="@color/secondtextOverCameraColor"
+                            android:id="@+id/tv_time_to_shot_photo"
+                            android:visibility="visible"
+                            />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+            <!-- CAMERA VIEWFINDER -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:weightSum="100"
+                >
+                <!-- empty SPACE -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="18" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="29"
+                    android:weightSum="100"
+                    android:orientation="horizontal"
+                    >
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="40"
+                        android:src="@mipmap/left_top_viewfinder"
+                        />
+                    <!-- Empty Space -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="20"
+                        />
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="40"
+                        android:src="@mipmap/right_top_viewfinder"
+                        />
+                </LinearLayout>
+                <!-- empty SPACE -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="15" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="29"
+                    android:weightSum="100"
+                    android:orientation="horizontal"
+                    >
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="40"
+                        android:src="@mipmap/left_bottom_viewfinder"
+                        />
+                    <!-- Empty Space -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="20"
+                        />
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="40"
+                        android:src="@mipmap/right_bottom_viewfinder"
+                        />
+                </LinearLayout>
+                <!-- empty SPACE -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="9"
+                    android:id="@+id/empty_space_bottom_CV"
+                    />
+    </LinearLayout>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <!-- PANEL TO CHOOSE CAM MODE -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/choose_mode_panel_id"
+        android:visibility="gone"
+        >
+        <!-- CAMERA LIVE VIEW -->
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            layout="@layout/modes_list"
+            />
+    </LinearLayout>
+</RelativeLayout>

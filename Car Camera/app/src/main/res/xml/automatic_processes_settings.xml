@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/auto_start">
+        <!-- Start when charger is connected -->
+        <ListPreference
+            android:title="@string/start_when_charger_is_connected"
+            android:summary="Summary"
+            android:key="@string/SP_automod_start_when_charg"
+            android:entries="@array/e_automod_start_when_charging"
+            android:entryValues="@array/ev_automod_start_when_charging"
+            android:defaultValue="0"/>
+        <!-- Start in background -->
+        <CheckBoxPreference
+            android:key="@string/SP_automod_start_in_background"
+            android:title="@string/start_in_background"
+            android:summary="Summary"
+            android:defaultValue="False"
+            />
+        <!-- Start Video Recording -->
+        <CheckBoxPreference
+            android:key="@string/SP_automod_start_video_rec"
+            android:title="@string/start_video_recording"
+            android:defaultValue="False"
+            />
+        <!-- Start Photo Capturing -->
+        <CheckBoxPreference
+            android:key="@string/SP_automod_start_photo_capturing"
+            android:title="@string/start_photo_capturing"
+            android:defaultValue="False"
+            />
+    </PreferenceCategory>
+    <!-- Auto Shut Down - Category -->
+    <PreferenceCategory
+        android:title="@string/auto_shut_down">
+        <!-- Detect Car Dock -->
+        <CheckBoxPreference
+            android:key="@string/SP_automod_detect_car_dock"
+            android:title="@string/deteck_car_dock"
+            android:summary="@string/exit_when_removed_from_dock"/>
+        <!-- Exit when charger is disconnected -->
+        <ListPreference
+            android:key="@string/SP_automod_exit_when_no_charger"
+            android:title="@string/exit_when_charger_disconnected"
+            android:summary="Summary"
+            android:entries="@array/e_automod_exit_when_charger_disconnected"
+            android:entryValues="@array/ev_automod_exit_when_charger_disconnected"
+            android:defaultValue="0"
+            />
+        <!-- Exit when low battery is detected -->
+        <ListPreference
+            android:key="@string/SP_automod_exit_when_low_battery"
+            android:title="@string/exit_when_low_battery_is_detected"
+            android:summary="Summary"
+            android:entries="@array/e_automod_exit_when_charger_disconnected"
+            android:entryValues="@array/ev_automod_exit_when_charger_disconnected"
+            android:defaultValue="0"
+            />
+    </PreferenceCategory>
+    <!-- Pause Video Recording -->
+    <PreferenceCategory
+        android:title="@string/pause_video_rec">
+        <!-- Pause When Charger Is Disconnected -->
+        <ListPreference
+            android:title="@string/pause_when_charger_is_disconnected"
+            android:key="@string/SP_automod_pause_when_charger_disconnected"
+            android:summary="Summary"
+            android:entries="@array/e_automod_exit_when_charger_disconnected"
+            android:entryValues="@array/ev_automod_exit_when_charger_disconnected"
+            android:defaultValue="0"
+            />
+        <!-- Pause When Low Battery Is Detected -->
+        <ListPreference
+            android:title="@string/pause_when_low_battery_is_detected"
+            android:key="@string/SP_automod_pause_when_low_battery_is_detected"
+            android:summary="Summary"
+            android:entries="@array/e_automod_exit_when_charger_disconnected"
+            android:entryValues="@array/ev_automod_exit_when_charger_disconnected"
+            android:defaultValue="0"
+            />
+        <!-- Resume Automatically -->
+        <CheckBoxPreference
+            android:key="@string/SP_automod_resume_automatically"
+            android:title="@string/resume_automatically"
+            android:summary="@string/restart_rec_explanation"
+            android:defaultValue="true"
+            />
+    </PreferenceCategory>
+    <!-- Pause Video Recording -->
+    <PreferenceCategory
+        android:title="@string/on_sudden_app_stop_or_video_pause"
+        >
+        <!-- Play warining sound -->
+        <ListPreference
+            android:title="@string/play_warning_sound"
+            android:key="@string/SP_automod_play_warning_sound"
+            android:summary="Summary"
+            android:entries="@array/ev_video_custom_resolution"
+            android:entryValues="@array/ev_video_custom_resolution"
+            android:defaultValue="0"
+            />
+    </PreferenceCategory>
+</PreferenceScreen>

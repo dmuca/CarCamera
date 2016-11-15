@@ -1,0 +1,561 @@
+<resources>
+    <string name="app_name">Kamerka Samochodowa</string>
+    <string name="access_camera_failed">Camera Access Failed, probably another application or process is using it.</string>
+    <string name="OK">OK</string>
+    <string name="menu">Menu</string>
+    <string name="settings">Settings</string>
+    <string name="camera_permission_expl">The application needs access to camera to work properly</string>
+    <!--<string name="no_camera_access_explanation">
+        Another process is currently using the camera, please close it and then try to run this application.</string>-->
+    <string name="camera_permisssion_explanation">I must have Camera Access Permission to record videos</string>
+    <string name="rec_audio_permission_explanation">If I have Permission to Record Audio, I could record videos with sound</string>
+    <string name="write_ext_storage_permission_explanation">Without this permission I cannot save photos and videos to your memory</string>
+    <string name="microphone_enabled">Microphone has been enabled</string>
+    <string name="microphone_disabled">Microphone has been disabled</string>
+    <string name="photo_sound_enabled">Photo capture sound enabled</string>
+    <string name="photo_sound_disabled">Photo capture sound disabled</string>
+    <string name="audio_permission_not_granted">Audio Permission Denied - Silent Video Only</string>
+    <string name="write_external_storage_permission_denied">I must have File permission to save movies and pictures</string>
+    <string name="car_camera_photo_">car_camera_photo_</string>
+    <string name="REC">REC</string>
+    <string name="car_cam_photos">Car Camera Photos</string>
+    <string name="car_cam_videos">Car Camera Videos</string>
+    <string name="video_quality">Video Quality</string>
+    <string name="length_stab_prot">Length, Stability, Protection</string>
+    <string name="use_gps_satellites">Use GPS satellites</string>
+
+
+
+
+
+
+
+
+    <string-array name="pref_syncConnectionTypes_values">
+        <item>Example Name</item>
+        <item>Android - KitKat</item>
+        <item>Apple is a shit</item>
+        <item>Microsoft rullez</item>
+        <item>Linux sucks</item>
+    </string-array>
+
+    <!-- #################################################################################################################### -->
+    <!-- ################################################# SETTINGS STRINGS ################################################# -->
+    <!-- #################################################################################################################### -->
+
+    <!-- ************************************************ GENERAL SETTINGS ************************************************ -->
+    <!-- GPS type entries -->
+    <string-array name="e_gps_satellite_types">
+        <item>New GPS method</item>
+        <item>Old GPS method</item>
+        <item>Disable GPS, (no speed and elevation on camera)</item>
+    </string-array>
+    <!-- back button entries -->
+    <string-array name="e_back_button">
+        <item>Extra step</item>
+        <item>Default in Android</item>
+        <item>Close Application</item>
+        <item>Continue working in background</item>
+    </string-array>
+    <!-- ************************************************ Camera SETTINGS ************************************************ -->
+    <!-- orientation -->
+    <string-array name="e_orientation">
+        <item>Auto</item>
+        <item>Landscape</item>
+        <item>Reverse Landscape</item>
+        <item>Portrait</item>
+        <item>Reverse Portrait</item>
+        <item>External Camera (USB)</item>
+        <item>External Camera - 180°</item>
+    </string-array>
+    <!-- camera mode -->
+    <string-array name="e_cam_mode">
+        <item>Not set</item>
+        <item>Daylight</item>
+        <item>Sunny</item>
+        <item>Cloudy</item>
+        <item>Twilight</item>
+        <item>Dark Night</item>
+        <item>City Night</item>
+        <item>Custom</item>
+    </string-array>
+    <!-- scene mode -->
+    <!--<string-array name="e_cam_scene_mode">
+        <item>Not Set</item>
+        <item>Default</item>
+        <item>Landscape</item>
+        <item>Sunny</item>
+        <item>Snow</item>
+        <item>Warm Lights</item>
+        <item>Sunset</item>
+        <item>Low Light</item>
+        <item>Fireworks</item>
+        <item>Night</item>
+    </string-array>-->
+    <!-- camera white balance -->
+    <!--<string-array name="e_cam_white_balance">
+        <item>Not set</item>
+        <item>Default</item>
+        <item>Daylight</item>
+        <item>Cloudy</item>
+        <item>Incandescent</item>
+        <item>Fluorescent</item>
+    </string-array>-->
+    <!-- camera exposure compensation -->
+    <!--<string-array name="e_cam_exposure_compensation">
+        <item>Not set</item>
+        <item>6</item>
+        <item>5</item>
+        <item>4</item>
+        <item>3</item>
+        <item>2</item>
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>-->
+    <!-- camera antibanding -->
+    <!--<string-array name="e_cam_antibanding">
+        <item>Not set</item>
+        <item>50 Hz</item>
+    </string-array>-->
+    <!-- camera falling in case of error -->
+    <string-array name="e_cam_falling_in_case_of_error">
+        <item>Continue with default camera mode</item>
+        <item>Try again without scene mode</item>
+        <item>Stop with message</item>
+    </string-array>
+
+
+
+
+
+    <!-- ************************************************ Video SETTINGS ************************************************ -->
+    <!-- video quality -->
+    <string-array name="e_video_quality">
+        <item>1.High Quality (HQ)</item>
+        <item>2.Low Quality (LQ)</item>
+        <item>3.Custom Quality</item>
+    </string-array>
+    <!-- custom - video resolution -->
+    <string-array name="e_video_custom_resolution">
+        <item>176x144 (QCIF)</item>
+        <item>320x240 (QVGA)</item>
+        <item>420x240 (WQVGA)</item>
+        <item>352x288 (CIF)</item>
+        <item>480x320 (HVGA)</item>
+        <item>640x480 (VGA)</item>
+        <item>720x480 (D1)</item>
+        <item>800x480 (WVGA)</item>
+        <item>864x480 (FWVGA)</item>
+        <item>1280x720 (HD 720p)</item>
+        <item>1920x1080 (HD 1080p)</item>
+        <item>1920x1088 (HD 1088p)</item>
+        <item>3840x2160 (4K UHD)</item>
+        <item>Custom (Insert Your Resolution)</item>
+    </string-array>
+    <!-- custom - video encoder -->
+    <string-array name="e_video_custom_encoder">
+        <item>H.264</item>
+        <item>H.263</item>
+        <item>MPEG4</item>
+    </string-array>
+    <!-- custom - Bitrate -->
+    <string-array name="e_video_custom_bitrate">
+        <item>High</item>
+        <item>Medium-High</item>
+        <item>Medium</item>
+        <item>Medium-Low</item>
+        <item>Low</item>
+        <item>Custom</item>
+    </string-array>
+    <!-- custom - Framerate -->
+    <string-array name="e_video_custom_framerate">
+        <item>High (30 fps)</item>
+        <item>Medium-High (25 fps)</item>
+        <item>Medium (20 fps)</item>
+        <item>Medium-Low (15 fps)</item>
+        <item>Low (10 fps)</item>
+    </string-array>
+    <!-- custom - File Format -->
+    <string-array name="e_video_custom_file_format">
+        <item>3GP</item>
+        <item>MP4</item>
+    </string-array>
+    <!-- Video Camera Operation -->
+    <string-array name="ev_video_camera_operation">
+        <item>Maximize Stability</item>
+        <item>Minimize Gaps Between Video Files</item>
+    </string-array>
+    <!-- Video File Length -->
+    <string-array name="e_video_file_length">
+        <item>5 seconds</item>
+        <item>10 seconds</item>
+        <item>20 seconds</item>
+        <item>40 seconds</item>
+        <item>60 seconds</item>
+        <item>2 minutes</item>
+        <item>3 minutes</item>
+        <item>5 minutes</item>
+        <item>10 minutes</item>
+        <item>20 minutes</item>
+        <item>30 minutes</item>
+    </string-array>
+
+    <string-array name="e_video_file_length_in_seconds">
+        <item>5</item>
+        <item>10</item>
+        <item>20</item>
+        <item>40</item>
+        <item>60</item>
+        <item>120</item>
+        <item>180</item>
+        <item>300</item>
+        <item>600</item>
+        <item>1200</item>
+        <item>1800</item>
+    </string-array>
+    <!-- Video protection -->
+    <string-array name="e_video_files_protection">
+        <item>Force of 2g</item>
+        <item>Force of 3g</item>
+        <item>Force of 4g</item>
+        <item>Force of 5g</item>
+        <item>Force of 6g</item>
+        <item>Force of 7g</item>
+        <item>Force of 8g</item>
+        <item>Force of 9g</item>
+        <item>Force of 10g</item>
+    </string-array>
+
+
+
+
+
+
+    <!-- ************************************************ Photo SETTINGS ************************************************ -->
+    <!-- Photo Snapshot Frequency -->
+    <string-array name="e_photo_snapshot_frequency">
+        <item>3 seconds</item>
+        <item>5 seconds</item>
+        <item>10 seconds</item>
+        <item>15 seconds</item>
+        <item>20 seconds</item>
+        <item>25 seconds</item>
+        <item>30 seconds</item>
+        <item>45 seconds</item>
+        <item>60 seconds</item>
+        <item>90 seconds</item>
+        <item>1 minutes</item>
+        <item>2 minutes</item>
+        <item>3 minutes</item>
+        <item>5 minutes</item>
+        <item>10 minutes</item>
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>2 hours</item>
+        <item>5 hours</item>
+    </string-array>
+    <!-- Photo Focus Mode -->
+    <string-array name="e_photo_focus_mode">
+        <item>Fixed</item>
+        <item>Infinity</item>
+        <item>Auto-Focus</item>
+    </string-array>
+    <!-- ************************************************ Background Mode SETTINGS ************************************************ -->
+    <!-- Photo Focus Mode -->
+    <string-array name="e_background_mode_group_buttons">
+        <item>Horizontally</item>
+        <item>Vercitally</item>
+    </string-array>
+    <!-- Photo Buttons Sizes -->
+    <string-array name="e_background_mode_size_of_buttons">
+        <item>Small</item>
+        <item>Large</item>
+    </string-array>
+
+    <!-- ************************************************ Automatic Mode SETTINGS ************************************************ -->
+    <!-- Photo Focus Mode -->
+    <string-array name="e_automod_start_when_charging">
+        <item>Disabled</item>
+        <item>Vertical landscape orientation</item>
+        <item>Vertical portrait orientation</item>
+        <item>Vertical landscape or portrait</item>
+    </string-array>
+    <!-- Exit when charger is disconnected -->
+    <string-array name="e_automod_exit_when_charger_disconnected">
+        <item>Disabled</item>
+        <item>Immediately</item>
+        <item>After 5 seconds</item>
+        <item>After 10 seconds</item>
+        <item>After 30 seconds</item>
+        <item>After 1 minute</item>
+        <item>After 2 minutes</item>
+        <item>After 5 minutes</item>
+    </string-array>
+
+
+    <!-- ************************************************ FORMATTING & DISPLAZ ************************************************ -->
+    <!-- Formatting and Display - DATE FORMAT -->
+    <string-array name="e_fad_date_format">
+        <item>2016-09-24</item>
+        <item>2016.09.24</item>
+        <item>24.09.2016</item>
+        <item>24/09/2016</item>
+        <item>09/24/2016</item>
+        <item>24-09-2016</item>
+        <item>24-Sep-2016</item>
+        <item>Sep 24, 2016</item>
+        <item>Sat, Sep 24, 2016</item>
+    </string-array>
+    <!-- Formatting and Display - UNITS -->
+    <string-array name="e_fad_units">
+        <item>meters, km/h</item>
+        <item>feet, mph</item>
+        <item>yards, mph</item>
+    </string-array>
+    <!-- Formatting and Display - SPEED -->
+    <string-array name="e_fad_speed">
+        <item>Do not display</item>
+        <item>With solid background color</item>
+        <item>With transparent background color</item>
+        <item>Without background</item>
+        <item>Large font</item>
+        <item>Large font with background</item>
+    </string-array>
+    <!-- Formatting and Display - ELEVATION -->
+    <string-array name="e_fad_elevation">
+        <item>Do not display</item>
+        <item>Small font</item>
+        <item>Small font with background</item>
+        <item>Large font</item>
+        <item>Large font with background</item>
+    </string-array>
+
+
+
+
+
+    <!-- strings.xml -->
+    <string name="brightness_slider_title">Brightness</string>
+    <string-array name="slider_summaries">
+        <!-- You can define as many summaries as you'd like -->
+        <!-- The active summary will reflect the preference's current value -->
+        <item>Intensity 1%</item>
+        <item>Intensity 2%</item>
+        <item>Intensity 3%</item>
+        <item>Intensity 4%</item>
+        <item>Intensity 5%</item>
+        <item>Intensity 6%</item>
+        <item>Intensity 7%</item>
+        <item>Intensity 8%</item>
+        <item>Intensity 9%</item>
+        <item>Intensity 10%</item>
+        <item>Intensity 11%</item>
+        <item>Intensity 12%</item>
+        <item>Intensity 13%</item>
+        <item>Intensity 14%</item>
+        <item>Intensity 15%</item>
+        <item>Intensity 16%</item>
+        <item>Intensity 17%</item>
+        <item>Intensity 18%</item>
+        <item>Intensity 19%</item>
+        <item>Intensity 20%</item>
+        <item>Intensity 21%</item>
+        <item>Intensity 22%</item>
+        <item>Intensity 23%</item>
+        <item>Intensity 24%</item>
+        <item>Intensity 25%</item>
+        <item>Intensity 26%</item>
+        <item>Intensity 27%</item>
+        <item>Intensity 28%</item>
+        <item>Intensity 29%</item>
+        <item>Intensity 30%</item>
+        <item>Intensity 31%</item>
+        <item>Intensity 32%</item>
+        <item>Intensity 33%</item>
+        <item>Intensity 34%</item>
+        <item>Intensity 35%</item>
+        <item>Intensity 36%</item>
+        <item>Intensity 37%</item>
+        <item>Intensity 38%</item>
+        <item>Intensity 39%</item>
+        <item>Intensity 40%</item>
+        <item>Intensity 41%</item>
+        <item>Intensity 42%</item>
+        <item>Intensity 43%</item>
+        <item>Intensity 44%</item>
+        <item>Intensity 45%</item>
+        <item>Intensity 46%</item>
+        <item>Intensity 47%</item>
+        <item>Intensity 48%</item>
+        <item>Intensity 49%</item>
+        <item>Intensity 50%</item>
+        <item>Intensity 51%</item>
+        <item>Intensity 52%</item>
+        <item>Intensity 53%</item>
+        <item>Intensity 54%</item>
+        <item>Intensity 55%</item>
+        <item>Intensity 56%</item>
+        <item>Intensity 57%</item>
+        <item>Intensity 58%</item>
+        <item>Intensity 59%</item>
+        <item>Intensity 60%</item>
+        <item>Intensity 61%</item>
+        <item>Intensity 62%</item>
+        <item>Intensity 63%</item>
+        <item>Intensity 64%</item>
+        <item>Intensity 65%</item>
+        <item>Intensity 66%</item>
+        <item>Intensity 67%</item>
+        <item>Intensity 68%</item>
+        <item>Intensity 69%</item>
+        <item>Intensity 70%</item>
+        <item>Intensity 71%</item>
+        <item>Intensity 72%</item>
+        <item>Intensity 73%</item>
+        <item>Intensity 74%</item>
+        <item>Intensity 75%</item>
+        <item>Intensity 76%</item>
+        <item>Intensity 77%</item>
+        <item>Intensity 78%</item>
+        <item>Intensity 79%</item>
+        <item>Intensity 80%</item>
+        <item>Intensity 81%</item>
+        <item>Intensity 82%</item>
+        <item>Intensity 83%</item>
+        <item>Intensity 84%</item>
+        <item>Intensity 85%</item>
+        <item>Intensity 86%</item>
+        <item>Intensity 87%</item>
+        <item>Intensity 88%</item>
+        <item>Intensity 89%</item>
+        <item>Intensity 90%</item>
+        <item>Intensity 91%</item>
+        <item>Intensity 92%</item>
+        <item>Intensity 93%</item>
+        <item>Intensity 94%</item>
+        <item>Intensity 95%</item>
+        <item>Intensity 96%</item>
+        <item>Intensity 97%</item>
+        <item>Intensity 98%</item>
+        <item>Intensity 99%</item>
+        <item>Intensity 100%</item>
+    </string-array>
+    <item name="brightness_slider_default" format="float" type="string">0.5</item>
+    <string name="brightness_slider_message">Aplication brightness works independently from system brightness</string>
+
+    <string name="keep_screen_locked">Keep Screen Locked</string>
+    <string name="after_turn_on_display">Keep screen locked after turn on the display</string>
+    <string name="use_aplication_brightness">Use Application Brightness</string>
+    <string name="use_independent_brightness">Use brightness application, working independently from your Android system</string>
+    <string name="general">General</string>
+    <string name="camera">Camera</string>
+    <string name="video">Video</string>
+    <string name="photo">Photo</string>
+    <string name="automatic_processes">Automatic Processes</string>
+    <string name="general_settings_summaries">GPS method, lock screen, brightness, back button</string>
+    <string name="orientation">Orientation</string>
+    <string name="volume">Volume</string>
+    <string name="enable_volume_of_capture_sound">Enable volume of capture sound</string>
+    <string name="camera_mode">Camera Mode</string>
+    <string name="white_balance">White Balance</string>
+    <string name="scene_mode">Scene Mode</string>
+    <string name="exposure_compensation">Exposure compensation</string>
+    <string name="antibanding">Antibanding</string>
+    <string name="falling_in_case_of_error">Falling in case of error</string>
+    <string name="video_resolution">Video Resolution</string>
+    <string name="video_encoder">Video Encoder</string>
+    <string name="bitrate">Bitrate</string>
+    <string name="framerate">Framerate</string>
+    <string name="file_format">File Format</string>
+    <string name="focus_mode">Focus Mode</string>
+    <string name="video_camera_operation">Video camera operation</string>
+    <string name="reduce_shaking___">reduce shaking, but also camera angle</string>
+    <string name="video_stabilization">Video Stabilization</string>
+    <string name="video_file_length">Video File Length</string>
+    <string name="protect_files_when___">Protect files when acceleration of gravity exceeds:</string>
+    <string name="photo_resolution">Photo Resolution</string>
+    <string name="snapshot_frequency">Snapshot Frequency</string>
+    <string name="create_thumbnails">Create Thumbnails</string>
+    <string name="background_operations">Background Operations</string>
+    <string name="video_button">Video Button</string>
+    <string name="prot_button">Protect Button</string>
+    <string name="microphone_button">Microphone Button</string>
+    <string name="background_buttons">Background Buttons</string>
+    <string name="photo_button">Photo Button</string>
+    <string name="exit_button">Exit Button</string>
+    <string name="move_button">Move Button</string>
+    <string name="grouping_and_size">Grouping and Size</string>
+    <string name="group_buttons">Group buttons</string>
+    <string name="size_of_buttons">Size of buttons</string>
+    <string name="background_mode">Background Mode</string>
+    <string name="move_button_explanation">Buttons can be moved around directly on the screen</string>
+    <string name="auto_start">Auto Start</string>
+    <string name="start_when_charger_is_connected">Start when charger is connected</string>
+    <string name="start_in_background">Start in background</string>
+    <string name="start_video_recording">Start video recording</string>
+    <string name="start_photo_capturing">Start photo capturing</string>
+    <string name="auto_shut_down">Auto Shut Down</string>
+    <string name="deteck_car_dock">Detect car dock</string>
+    <string name="exit_when_removed_from_dock">exit when removed from dock</string>
+    <string name="exit_when_charger_disconnected">Exit when charger is disconnected</string>
+    <string name="exit_when_low_battery_is_detected">Exit when low battery is detected</string>
+    <string name="pause_video_rec">Pause Video Recording</string>
+    <string name="pause_when_charger_is_disconnected">Pause when charger is disconnected</string>
+    <string name="pause_when_low_battery_is_detected">Pause when low battery is detected</string>
+    <string name="resume_automatically">Resume automatically</string>
+    <string name="restart_rec_explanation">restart recording when charger is connected</string>
+    <string name="play_warning_sound">Play warning sound</string>
+    <string name="on_sudden_app_stop_or_video_pause">On sudden app stop or video pause</string>
+    <string name="camera_subsettings">Orientation, capture sounds, camera mode and parameters</string>
+    <string name="video_subsettings">Quality, stability, length, sound, g-force, files</string>
+    <string name="photo_subsettings">Resolution, frequency, focus, thumbnails, files</string>
+    <string name="background_subsettings">Operation and placement of buttons on top of other apps</string>
+    <string name="automatic_mode_subsettings">Start/Stop app and video/photo, car dock, low power, warning sound</string>
+    <string name="formatting_and_display_subsettings">Date format, units, speed, elevation, GPS coordinates, on-screen controls</string>
+    <string name="overlays">Overlays</string>
+    <string name="overlays_subsettings">Overlay timestamps and GPS data (speed, elevation, GPS coordinates)</string>
+    <string name="date_format">Date format</string>
+    <string name="units">Units</string>
+    <string name="speed">Speed</string>
+    <string name="elevation">Elevation</string>
+    <string name="gps_coordinates">GPS coordinates</string>
+    <string name="viewfinder">Viewfinder</string>
+    <string name="transparency">Transparency</string>
+    <string name="display_on_recorded_video">Display on recorded video</string>
+    <string name="display_on_photos">Display On Photos</string>
+    <string name="may_not_work_if_auto_brightness">May not work if auto-brightness is set</string>
+    <string name="defaultt">Default</string>
+    <string name="exit">Exit</string>
+    <string name="continue_working_in_background">Continue working in background</string>
+    <string name="_default_">Default</string>
+    <string name="camera_error">Camera Error</string>
+    <string name="camera_is_probably_in_use_by_another_app">Camera is probably in use by another application or process,
+        please close it and try again.</string>
+    <string name="not_set">not set</string>
+    <string name="custom">Custom</string>
+    <string name="video_settings_second_section">Stability, length, sound and protection options</string>
+    <string name="set_snapshot_frequency_in_sec">Set snapshot frequency, in seconds:</string>
+    <string name="cancel">Cancel</string>
+    <string name="_seconds">" seconds"</string>
+    <string name="wrong_format_insert_integer_numb">WRONG format, please insert integer number</string>
+    <string name="minumum_frequency_is_1_sec">Minumum frequency is 1 seconds</string>
+    <string name="warrning_fast_frequency_might_cause_problems">WARRNING: high-frequency of taking pictures with
+        big resolution, might cause performance problems, such as application crashes. It is recommended to set minumum 3 seconds break.</string>
+    <string name="ok_im_aware_of_danger">OK, I\'m aware of danger.</string>
+    <string name="mode">Mode</string>
+    <string name="lat">LAT:</string>
+    <string name="long_">LONG:</string>
+    <string name="dark_night">Dark Night</string>
+    <string name="Not_Set">Not Set</string>
+    <string name="daylight">Daylight</string>
+    <string name="cloudy">Cloudy</string>
+    <string name="city_night">City Night</string>
+    <string name="sunny">Sunny</string>
+    <string name="moonlight">Moonlight</string>
+    <string name="write_settings_permission_explanation">Application needs that permission to work properly.</string>
+    <string name="cannot_read_files_folder">I cannot read folder with videos/photos directory, sorry.</string>
+    <string name="write_settings_perm_not_granted">Write Settings Permission not granted, app needs it to work properly.</string>
+    <string name="no_back_camera_in_device">Sorry, your device does\'t have back camera.</string>
+</resources>

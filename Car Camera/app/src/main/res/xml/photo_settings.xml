@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Photo Resolution -->
+    <ListPreference
+        android:title="@string/photo_resolution"
+        android:key="@string/SP_photo_resolution"
+        android:defaultValue="0"
+        android:summary="Summary"
+        />
+    <!-- Photo Snapshot Frequency -->
+    <Preference
+        android:title="@string/snapshot_frequency"
+        android:key="@string/SP_photo_snapshot_frequency"
+        android:defaultValue="30"
+        android:summary="Summary"
+        >
+
+    </Preference>
+    <!-- Photo Focus Mode -->
+    <ListPreference
+        android:title="@string/focus_mode"
+        android:key="@string/SP_photo_focus_mode"
+        android:entries="@array/e_photo_focus_mode"
+        android:entryValues="@array/ev_photo_focus_mode"
+        android:defaultValue="0"
+        android:summary="Summary"
+        />
+    <!-- Create Photo Thumbnails -->
+    <!--<CheckBoxPreference
+        android:key= "@string/SP_photo_create_thumbnails"
+        android:title="@string/create_thumbnails"
+        android:entries="@array/e_photo_focus_mode"
+        android:entryValues="@array/ev_photo_focus_mode"
+        android:defaultValue="0"
+        />-->
+</PreferenceScreen>

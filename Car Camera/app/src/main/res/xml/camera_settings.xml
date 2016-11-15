@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- ORIENTATION -->
+    <ListPreference
+        android:key="@string/SP_orientation"
+        android:title="@string/orientation"
+        android:entryValues="@array/ev_orientation"
+        android:entries="@array/e_orientation"
+        android:defaultValue="0"
+        android:summary="Summary"
+        />
+    <!-- CAMERA PARAMETERS -->
+    <PreferenceCategory
+        android:title="Camera Parameters"
+        android:key="pref_key_storage_settings">
+        <!-- Camera Mode -->
+        <ListPreference
+            android:title="@string/camera_mode"
+            android:key="@string/SP_camera_mode"
+            android:entryValues="@array/ev_cam_mode"
+            android:entries="@array/e_cam_mode"
+            android:defaultValue="0"
+            android:summary="Summary"
+            />
+        <!-- Scene Mode -->
+        <ListPreference
+            android:title="@string/scene_mode"
+            android:key="@string/SP_scene_mode"
+            android:defaultValue="0"
+            android:summary="Summary"
+            />
+
+        <!--android:entryValues="@array/ev_cam_scene_mode"
+        android:entries="@array/e_cam_scene_mode"-->
+
+
+
+        <!-- White Balance -->
+        <ListPreference
+            android:title="@string/white_balance"
+            android:key="@string/SP_camera_white_balance"
+            android:defaultValue="0"
+            android:summary="Summary"
+            />
+        <!-- Exposure Compensation -->
+        <ListPreference
+            android:title="@string/exposure_compensation"
+            android:key="@string/SP_camera_exposure_compensation"
+            android:defaultValue="0"
+            android:summary="Summary"
+            />
+        <!-- Antibanding -->
+        <ListPreference
+            android:title="@string/antibanding"
+            android:key="@string/SP_camera_antibanding"
+            android:defaultValue="0"
+            android:summary="Summary"
+            />
+        <!-- Falling In Case Of Error -->
+        <ListPreference
+            android:title="@string/falling_in_case_of_error"
+            android:key="@string/SP_camera_falling_in_case_of_error"
+            android:entryValues="@array/ev_cam_falling_in_case_of_error"
+            android:entries="@array/e_cam_falling_in_case_of_error"
+            android:defaultValue="0"
+            android:summary="Summary"
+            />
+
+    </PreferenceCategory>
+</PreferenceScreen>
