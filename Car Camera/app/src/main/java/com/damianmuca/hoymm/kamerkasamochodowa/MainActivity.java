@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
 
 
-    private Camera myCameraObj;
+    private static Camera myCameraObj;
 
     // Photo Capture Sound
     private MediaPlayer photoCaptureSound;
@@ -98,8 +98,14 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
+
+
+
         // in order to make Options Menu transparent on API >= 21, we must make STATUS BAR transparent
-        setStatusBarTranslucent(android.os.Build.VERSION.SDK_INT >= 21);
+        //setStatusBarTranslucent(android.os.Build.VERSION.SDK_INT >= 21);
+
+
+
         setContentView(R.layout.activity_main);
         // initializate objects
         photoCaptureSound = MediaPlayer.create(this, R.raw.photograpy_capture_sound);
@@ -423,34 +429,33 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     }
     // get RECORD AUDIO PERMISSION
     private boolean getPermissionsRecordAudio() {
+        if (ContextCompat.checkSelfPermission(this,  Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)
+            return true;
+
         // Here, thisActivity is the current activity -- RECORD AUDIO PERMISSION
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)) {
-                // Camera Permission Explanation
-                Toast.makeText(this, R.string.rec_audio_permission_explanation, Toast.LENGTH_LONG).show();
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)) {
+            // Camera Permission Explanation
+            Toast.makeText(this, R.string.rec_audio_permission_explanation, Toast.LENGTH_LONG).show();
 
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}
-                        , MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}
+                    , MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
+            // Show an expanation to the user *asynchronously* -- don't block
+            // this thread waiting for the user's response! After the user
+            // sees the explanation, try again to request the permission.
+        } else {
 
-            } else {
+            // No explanation needed, we can request the permission.
 
-                // No explanation needed, we can request the permission.
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.RECORD_AUDIO},
+                    MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
 
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.RECORD_AUDIO},
-                        MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
-
-                // MY_PERMISSIONS_REQUEST_CAMERA is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-            }
-            return false;
+            // MY_PERMISSIONS_REQUEST_CAMERA is an
+            // app-defined int constant. The callback method gets the
+            // result of the request.
         }
-        return true;
+        return false;
     }
     // check permission wo WRITE_SETTINGS
     private boolean getPermissionToWriteSettings() {
@@ -506,7 +511,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         switch (requestCode) {
             // ### ### ### CAMERA PERMISSIONS
             case MY_PERMISSIONS_REQUEST_CAMERA: {
-                // If request is cancelled, the result arrays are empty.
+                // Permission GRANTED
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                     // permission was granted, yay! Do the
@@ -525,12 +530,13 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             }
             // ### ### ### WRITE EXTERNAL STORAGE PERMISSIONS
             case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
-                // If request is cancelled, the result arrays are empty.
+                // Permission GRANTED
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
                     initializateMyFileListsObjects();
+                    initializatePicturesMaking();
                 }
                 // PERMISSION NOT GRANTED
                 else {
@@ -544,7 +550,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             }
             // ### ### ### RECORD AUDIO PERMISSIONS
             case MY_PERMISSIONS_REQUEST_RECORD_AUDIO: {
-                // If permission IS GRANTED
+                // Permission GRANTED
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
@@ -566,7 +572,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             }
             // ### ### ### WRITE SETTINGS PERMISSIONS
             case MY_PERMISSIONS_REQUEST_WRITE_SETTINGS: {
-                // If permission IS GRANTED
+                // Permission GRANTED
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
@@ -582,7 +588,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             }
             // ### ### ### WRITE SETTINGS PERMISSIONS
             case MY_MULTIPLE_PERMISSIONS_REQUEST: {
-                // If permission IS GRANTED
+                // Permission GRANTED
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     initializateMostImportantObjectForAppWorking();
                 }
@@ -611,8 +617,6 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     private boolean initializateMyCameraObj() {
         try {
             myCameraObj = getCameraInstance();
-
-
             // case camera is NOT used by ANOTHER PROCESS
             if (myCameraObj != null) {
                 mPreview = new CameraPreview(context, myCameraObj, myCameraObj.getParameters());
@@ -677,11 +681,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     boolean makingPicturesActivated, makingVideoActivated;
     public void pictureMakingButtonClicked(View view) {
         // if NO CAMERA PERMISSION GRANTED
-        if (ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED)
-            getPermissionsCamera();
-        // if NO WRITE EXTERNAL STORAGE PERMISSION GRANTED
-        else if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-            getPermissionsWriteExternalStorage();
+        if (!ifAllThreePermissionNeededToRunGranted())
+            getFourThreePermisions();
         // permission GRANTED program can make pictures
         else {
 
@@ -707,11 +708,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     // VIDEO MAKING BUTTON
     public void videoMakingButtonClicked(View view) {
         // if NO CAMERA PERMISSION GRANTED
-        if (ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED)
-            getPermissionsCamera();
-        // if NO WRITE EXTERNAL STORAGE PERMISSION GRANTED
-        else if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-            getPermissionsWriteExternalStorage();
+        if (!ifAllThreePermissionNeededToRunGranted())
+            getFourThreePermisions();
         // permission GRANTED program can make video
         else {
             // --- TAKE CARE OF VISUAL EFFECTS ---
@@ -1008,7 +1006,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         else {
             // check IF i have permission to use MICROPHONE
             // yes, we have PERMISSION to use MICROPHONE, let's proceed
-            if (!getPermissionsRecordAudio()) {
+            if (getPermissionsRecordAudio()) {
                 Toast.makeText(this, R.string.microphone_enabled, Toast.LENGTH_SHORT).show();
                 microphoneButton.setImageResource(R.mipmap.microphone_active);
                 // save SharedPref
@@ -1035,18 +1033,32 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
+
+            /*final String first = ContextCompat.checkSelfPermission
+                    (this, Manifest.permission.WRITE_SETTINGS) == PackageManager.PERMISSION_GRANTED ? "True | " : "False | ";
+            final String sec = Build.VERSION.SDK_INT < Build.VERSION_CODES.M ? "True | " : "False | ";
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //stuff that updates ui
+                    Toast.makeText(context, first+ sec +
+
+                            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ?
+                                    ((Settings.System.canWrite(context)) ? " True" : " False")
+                            : "API<23")
+
+
+                            ,Toast.LENGTH_LONG).show();
+                }
+            });*/
+
             // Run enable only if all needed permissions are granted
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
-                    PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SETTINGS) ==
-                        PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
-                        PackageManager.PERMISSION_GRANTED) {
-                //if(!myHolder.getSurface().isValid())
-                //    continue;
+            if (ifAllThreePermissionNeededToRunGranted()) {
 
 
-                // change screen color (to normal
+                // change screen color (to normal, after photoshot effect brightnnes screen)
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -1078,6 +1090,21 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
         //Canvas myCanvas = myHolder.lockCanvas();
         //myHolder.unlockCanvasAndPost(myCanvas);
+    }
+
+    private boolean ifAllThreePermissionNeededToRunGranted() {
+
+        return (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
+            PackageManager.PERMISSION_GRANTED &&
+
+
+            (ContextCompat.checkSelfPermission
+                    (this, Manifest.permission.WRITE_SETTINGS) == PackageManager.PERMISSION_GRANTED ||
+                    Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
+                    Settings.System.canWrite(context)) &&   //warrning but line above we check it, so no way to get here API<23
+
+            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                    PackageManager.PERMISSION_GRANTED);
     }
 
     private void takingPictureRefresh() {
@@ -1213,54 +1240,10 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             if (listOfPictureFiles != null) {
 
                 while (listOfPictureFiles.size() > filesAmountLimit) {
-                    final String name = listOfPictureFiles.get(0).toString();
                     deleted = listOfPictureFiles.get(0).delete();
                     listOfPictureFiles.remove(0);
-                    // REFRESH media system, to tell PHONE GALLERY that it was deleted
-                    //refreshGallery(name);
                 }
             }
-            // BROADCAST to refresh gallery is a WASTE OF PERFORMANCE
-            //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
-
-
-
-            /*// initializate it only ONCE when program
-            File[] myFilesList = fileDirectory.listFiles();
-            while (myFilesList.length >= filesAmountLimit) {
-                int theOldestIndex = 0;
-                double theOldestTime = myFilesList[0].lastModified();
-                // now find THE OLDEST file in the list
-                for (int i = 1; i < myFilesList.length; ++i) {
-                    if (myFilesList[i].lastModified() < theOldestTime) {
-                        theOldestTime = myFilesList[i].lastModified();
-                        theOldestIndex = i;
-                    }
-                }
-
-                final String name = myFilesList[theOldestIndex].toString();
-                // if the file was not deleted, then return false
-                String pathToFile = myFilesList[theOldestIndex].getPath();
-
-                boolean deleted = myFilesList[theOldestIndex].delete();
-
-
-                // REFRESH media system, to tell PHONE GALLERY that it was deleted
-                refreshGallery(name);
-                // BROADCAST to refresh gallery is a WASTE OF PERFORMANCE
-                //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
-
-                if (!deleted)
-                    return false;
-                else
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(), name + ", deleted.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                myFilesList = fileDirectory.listFiles();
-            }*/
         }
         // pictures and videos are ORDERED from 0 index THE OLDEST FILE, to LAST INDEX - NEWEST FILE
         else if (mediaType == MEDIA_TYPE_VIDEO){
@@ -1402,7 +1385,6 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
     @Override
     protected void onStart() {
-
         if(getFourThreePermisions()){
             // if there is possibility to get PERMISSION for that particular DEVICE, then do so
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M &&
@@ -1410,20 +1392,12 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                         ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SETTINGS)
                                 != PackageManager.PERMISSION_GRANTED
                         )
-                getPermissionToWriteSettings();
+                    getPermissionToWriteSettings();
         }
-
-
         super.onStart();
     }
 
     private void initializateMostImportantObjectForAppWorking() {
-        /*boolean first = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
-                PackageManager.PERMISSION_GRANTED;
-        boolean sec = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SETTINGS) ==
-                PackageManager.PERMISSION_GRANTED;
-        boolean th = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
-                PackageManager.PERMISSION_GRANTED;*/
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
                 PackageManager.PERMISSION_GRANTED &&
@@ -1453,40 +1427,36 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     }
 
     private boolean getFourThreePermisions() {
-
-
-
-
         // Here, thisActivity is the current activity -- CAMERA PERMISSION
         // Write Settings only needed when API device is >=23
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (
-                    ContextCompat.checkSelfPermission
-                            (this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
-                            (ContextCompat.checkSelfPermission
-                                    (this, Manifest.permission.WRITE_SETTINGS) != PackageManager.PERMISSION_GRANTED
-                                    || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ||
-                            ContextCompat.checkSelfPermission
-                                    (this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                            ContextCompat.checkSelfPermission
-                                    (this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
+        if (
+                ContextCompat.checkSelfPermission
+                        (this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
 
-                    ) {
+                        (ContextCompat.checkSelfPermission
+                                (this, Manifest.permission.WRITE_SETTINGS) != PackageManager.PERMISSION_GRANTED
+                                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                                && Settings.System.canWrite(context)
+                                ) ||
+
+                        ContextCompat.checkSelfPermission
+                                (this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+
+                        ContextCompat.checkSelfPermission
+                                (this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
+
+                ) {
 
                 // Should we show an explanation?
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.CAMERA)) {
-
                     // Show an expanation to the user *asynchronously* -- don't block
                     // this thread waiting for the user's response! After the user
                     // sees the explanation, try again to request the permission.
-
                     // Camera Permission Explanation
                     Toast.makeText(this, R.string.camera_permisssion_explanation, Toast.LENGTH_LONG).show();
 
-
                 }
-
                 ActivityCompat.requestPermissions(this,
                         new String[]{
                                 Manifest.permission.CAMERA,
@@ -1497,7 +1467,6 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
                 return false;
             }
-        }
         // if PERMISSIONS are allowed from manifest (not dynamically), then use method to initializate objects
         else
             initializateMostImportantObjectForAppWorking();
@@ -1526,13 +1495,13 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             if (supportedSceneModes != null)
                 params.setSceneMode(supportedSceneModes.get(Integer.parseInt(sceneModeData)));
 
-            // active particular MODE in MODES PANEL
-            modesListPanel[Integer.parseInt(sceneModeData)].setActivated(true);
-            // set proper scene mode icon/text on bottom button
-
             // disactivate ALL
             for (LinearLayout item : modesListPanel)
                 item.setActivated(false);
+
+
+            // active particular MODE in MODES PANEL
+            modesListPanel[Integer.parseInt(sceneModeData)].setActivated(true);
 
 
             switch(sceneModeData){
@@ -1770,6 +1739,10 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         return result;
     }
 
+    public static Camera getMyCameraObj() {
+        return myCameraObj;
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -1808,26 +1781,36 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     @Override
     public void onBackPressed() {
         String whatToToWhenBackPressed = sharedPref.getString(getResources().getString(R.string.SP_general_back_button),"0");
-        switch (whatToToWhenBackPressed){
-            case "0":
-                chooseWhatToDoWhenBackButtonClicked();
-                break;
-            case "1":
-                if (myCameraObj != null)
-                    myCameraObj.release();
-                finish();
-                super.onBackPressed();
-                break;
-            case "2":
-                if (myCameraObj != null)
-                    myCameraObj.release();
-                finish();
-                super.onBackPressed();
-                break;
-            case "3":
-                closeAppAndContinueInBackground();
-                super.onBackPressed();
-                break;
+
+        // if choose camera mode panel is opened, then onBackPressed just make it disappear and NOTHING MORE
+        if (modeButtonToOpenPanel.isActivated()){
+            // Inactive button that opens panel
+            modeButtonToOpenPanel.setActivated(false);
+            // HIDE Panel
+            modeButtonFromChoosingPanel.setVisibility(View.GONE);
+        }
+        else {
+            switch (whatToToWhenBackPressed) {
+                case "0":
+                    chooseWhatToDoWhenBackButtonClicked();
+                    break;
+                case "1":
+                    if (myCameraObj != null)
+                        myCameraObj.release();
+                    finish();
+                    super.onBackPressed();
+                    break;
+                case "2":
+                    if (myCameraObj != null)
+                        myCameraObj.release();
+                    finish();
+                    super.onBackPressed();
+                    break;
+                case "3":
+                    closeAppAndContinueInBackground();
+                    super.onBackPressed();
+                    break;
+            }
         }
     }
 
@@ -1933,10 +1916,16 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     }
 
     public void changeModeButtonClicked(View view) {
-        modeButtonToOpenPanel.setActivated(!modeButtonToOpenPanel.isActivated());
 
-        // SHOW OR HIDE
-        modeButtonFromChoosingPanel.setVisibility(modeButtonToOpenPanel.isActivated() ? View.VISIBLE : View.GONE);
+        // if NO CAMERA PERMISSION GRANTED
+        if (ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED)
+            getPermissionsCamera();
+
+        else {
+            modeButtonToOpenPanel.setActivated(!modeButtonToOpenPanel.isActivated());
+            // SHOW OR HIDE
+            modeButtonFromChoosingPanel.setVisibility(modeButtonToOpenPanel.isActivated() ? View.VISIBLE : View.GONE);
+        }
     }
 
     public void newModeButtonCliked(View view) {
@@ -1949,48 +1938,64 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         for (LinearLayout item : modesListPanel)
             item.setActivated(false);
 
+
+
+
+
         // save SP data and ACTIVATE one selected
         switch(view.getId()) {
             case R.id.not_set_button_ll_id:
                 editor.putString(getResources().getString(R.string.SP_camera_mode),"0");
                 modesListPanel[0].setActivated(true);
+                modeButtonToOpenPanelIcon.setImageResource(R.mipmap.not_set);
+                modeButtonToOpenPanelTV.setText(R.string.not_set);
                 break;
             case R.id.daylight_button_ll_id:
                 editor.putString(getResources().getString(R.string.SP_camera_mode),"1");
                 modesListPanel[1].setActivated(true);
+                modeButtonToOpenPanelIcon.setImageResource(R.mipmap.daylight);
+                modeButtonToOpenPanelTV.setText(R.string.daylight);
                 break;
             case R.id.sunny_button_ll_id:
                 editor.putString(getResources().getString(R.string.SP_camera_mode),"2");
                 modesListPanel[2].setActivated(true);
+                modeButtonToOpenPanelIcon.setImageResource(R.mipmap.sunny);
+                modeButtonToOpenPanelTV.setText(R.string.sunny);
                 break;
             case R.id.cloudy_button_ll_id:
                 editor.putString(getResources().getString(R.string.SP_camera_mode),"3");
                 modesListPanel[3].setActivated(true);
+                modeButtonToOpenPanelIcon.setImageResource(R.mipmap.cloudy);
+                modeButtonToOpenPanelTV.setText(R.string.cloudy);
                 break;
             case R.id.moonlight_button_ll_id:
                 editor.putString(getResources().getString(R.string.SP_camera_mode),"4");
                 modesListPanel[4].setActivated(true);
+                modeButtonToOpenPanelIcon.setImageResource(R.mipmap.moonlight);
+                modeButtonToOpenPanelTV.setText(R.string.moonlight);
                 break;
             case R.id.dark_night_button_ll_id:
                 editor.putString(getResources().getString(R.string.SP_camera_mode),"5");
                 modesListPanel[5].setActivated(true);
+                modeButtonToOpenPanelIcon.setImageResource(R.mipmap.dark_night);
+                modeButtonToOpenPanelTV.setText(R.string.dark_night);
                 break;
             case R.id.city_night_button_ll_id:
                 editor.putString(getResources().getString(R.string.SP_camera_mode),"6");
                 modesListPanel[6].setActivated(true);
+                modeButtonToOpenPanelIcon.setImageResource(R.mipmap.city_night);
+                modeButtonToOpenPanelTV.setText(R.string.city_night);
                 break;
             case R.id.custom_button_ll_id:
                 editor.putString(getResources().getString(R.string.SP_camera_mode),"7");
                 modesListPanel[7].setActivated(true);
+                modeButtonToOpenPanelIcon.setImageResource(R.mipmap.custom);
+                modeButtonToOpenPanelTV.setText(R.string.custom);
                 break;
         }
         editor.apply();
 
         // disactive bottom panel button (Mode List Opening Button)
         modeButtonToOpenPanel.setActivated(false);
-
-        getCameraSettings();
-
-
     }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.damianmuca.hoymm.kamerkasamochodowa">
+
     <!-- PERMISSIONS -->
     <uses-permission android:name="android.permission.SET_DEBUG_APP"/>
 
@@ -24,11 +25,10 @@
         android:supportsRtl="true"
         android:largeHeap="true"
         >
-
         <!-- MAIN ACTIVITY -->
         <activity
             android:name=".MainActivity"
-            android:theme="@style/AppTheme.ActionBar.Transparent"
+            android:theme="@style/AppTheme.ActionBar.TopBarPanel"
             >
             <intent-filter>
 

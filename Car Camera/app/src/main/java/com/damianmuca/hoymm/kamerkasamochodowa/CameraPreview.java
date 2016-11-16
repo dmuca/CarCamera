@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.hardware.Camera;
 import android.nfc.Tag;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
@@ -12,6 +13,7 @@ import android.view.SurfaceView;
 import android.view.WindowManager;
 
 import java.io.IOException;
+import java.util.List;
 
 import static android.content.Context.WINDOW_SERVICE;
 
@@ -75,23 +77,29 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
         if(display.getRotation() == Surface.ROTATION_0)
         {
-            l_parameters.setPreviewSize(getHeight(), getWidth());
+            int width = getScreenWidth(MainActivity.context);
+            int height = getScreenHeight(MainActivity.context);
+
+            l_parameters.setPreviewSize(getScreenHeight(MainActivity.context),getScreenWidth(MainActivity.context));
             mCamera.setDisplayOrientation(90);
         }
 
         else if(display.getRotation() == Surface.ROTATION_90)
         {
-            l_parameters.setPreviewSize( getWidth(), getHeight());
+            l_parameters.setPreviewSize(MainActivity.getMyCameraObj().getParameters().getPreviewSize().width,
+                    MainActivity.getMyCameraObj().getParameters().getPreviewSize().height);
         }
 
         else if(display.getRotation() == Surface.ROTATION_180)
         {
-            l_parameters.setPreviewSize(getHeight(),  getWidth());
+            l_parameters.setPreviewSize(MainActivity.getMyCameraObj().getParameters().getPreviewSize().height,
+                    MainActivity.getMyCameraObj().getParameters().getPreviewSize().width);
         }
 
         else if(display.getRotation() == Surface.ROTATION_270)
         {
-            l_parameters.setPreviewSize(getWidth(), getHeight());
+            l_parameters.setPreviewSize(MainActivity.getMyCameraObj().getParameters().getPreviewSize().width,
+                    MainActivity.getMyCameraObj().getParameters().getPreviewSize().height);
             mCamera.setDisplayOrientation(180);
         }
 
@@ -128,6 +136,22 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         if (mCamera != null) {
             mCamera.release();
         }
+    }
+
+    private static int getScreenWidth(Context context) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        return metrics.widthPixels;
+    }
+
+    private static int getScreenHeight(Context context){
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        return metrics.heightPixels;
     }
 
 

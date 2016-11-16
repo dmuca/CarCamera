@@ -8,11 +8,16 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-
     <!--  STATUS BAR MENU -->
-    <style name="AppTheme.ActionBar.Transparent" parent="AppTheme">
+    <!--<style name="AppTheme.ActionBar.NoTitleBar.Fullscreen" parent="AppTheme">
         <item name="android:windowContentOverlay">@null</item>
         <item name="windowActionBarOverlay">true</item>
+        <item name="colorPrimary">@color/optionsMenuBackgroundColor</item>
+    </style>-->
+
+
+    <style name="AppTheme.ActionBar.TopBarPanel" parent="AppTheme">
+        <item name="colorPrimaryDark">@color/optionsMenuBackgroundColor</item>
         <item name="colorPrimary">@color/optionsMenuBackgroundColor</item>
     </style>
 
@@ -81,7 +86,8 @@
         <!-- panel TextView style-->
     <style name="menuTextViewStyle">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">25</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">#FFFFFF</item>
     </style>

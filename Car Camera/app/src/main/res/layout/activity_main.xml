@@ -10,155 +10,163 @@
     tools:context="com.damianmuca.hoymm.kamerkasamochodowa.MainActivity"
     android:background="#46463e"
     >
-
-
-    <!-- FOREGROUND CONTROL PANEL and CAMERA VIEW -->
-    <LinearLayout
+    <!-- CAMERA LIVE VIEW AND FOREGROUND CONTROL PANEL -->
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:weightSum="100"
-        >
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="9"/>
+        android:layout_height="match_parent">
         <!-- CAMERA LIVE VIEW -->
         <FrameLayout
             android:id="@+id/camera_preview"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="76"
+            android:layout_height="match_parent"
             />
-
-        <!-- Bottom BUTTONS -->
+        <!-- FOREGROUND CONTROL PANEL and CAMERA VIEWFINDER -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="15"
-            android:orientation="horizontal"
-            android:background="@color/layoutColor"
-            android:weightSum="302"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="100"
             >
-            <!-- First bottom panel Button -->
+            <!-- Empty Space-->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="85"/>
+            <!-- Bottom BUTTONS -->
             <LinearLayout
-                style="@style/bottomLLPanelButtonStyle"
-                android:clickable="true"
-                android:onClick="changeModeButtonClicked"
-                android:id="@+id/change_mode_button_id"
-                android:gravity="center|bottom"
-                android:background = "@drawable/bottom_panel_button_color_clickable"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="15"
+                android:orientation="horizontal"
+                android:background="@color/layoutColor"
+                android:weightSum="302"
                 >
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:id="@+id/change_mode_button_img_id"
-                    android:layout_height="wrap_content"
-                    android:src="@mipmap/modes"
-                    />
-                <TextView
-                    style="@style/menuTextViewStyle"
-                    android:id="@+id/change_mode_button_tv_id"
-                    android:text="@string/mode"
-                    />
+                <!-- First bottom panel Button -->
+                <LinearLayout
+                    style="@style/bottomLLPanelButtonStyle"
+                    android:clickable="true"
+                    android:onClick="changeModeButtonClicked"
+                    android:id="@+id/change_mode_button_id"
+                    android:gravity="bottom|center"
+                    android:background = "@drawable/bottom_panel_button_color_clickable"
+                    >
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:id="@+id/change_mode_button_img_id"
+                        android:clickable="false"
+                        android:layout_height="0dp"
+                        android:layout_weight="60"
+                        android:src="@mipmap/modes"
+                        />
+                    <TextView
+                        style="@style/menuTextViewStyle"
+                        android:id="@+id/change_mode_button_tv_id"
+                        android:text="@string/mode"
+                        />
+                </LinearLayout>
+                <!-- Second bottom panel Button -->
+                <RelativeLayout
+                    style="@style/bottomLLPanelButtonStyle"
+                    android:clickable="true"
+                    android:id="@+id/photocamera_button_bg_id"
+                    android:background = "@drawable/bottom_panel_button_color_clickable"
+                    android:onClick="pictureMakingButtonClicked"
+                    >
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:weightSum="100"
+                        android:gravity="bottom|center"
+                        android:orientation="vertical"
+                        >
+                        <!-- Photocamera Icon -->
+                        <ImageView
+                            android:src="@mipmap/photocamera"
+                            android:layout_width="wrap_content"
+                            android:id="@+id/photo_cam_icon_id"
+                            android:clickable="false"
+                            android:layout_height="0dp"
+                            android:layout_weight="60"
+                            />
+                        <TextView
+                            style="@style/menuTextViewStyle"
+                            android:text="@string/camera"
+                            />
+                    </LinearLayout>
+                    <!-- Speaker (Sound when picture shoot) icon -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:weightSum="100"
+                        android:orientation="vertical"
+                        >
+                        <ImageView
+                            android:layout_gravity="right"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="40"
+                            android:padding="4dp"
+                            android:onClick="photoSoundButtonClicked"
+                            android:src="@mipmap/speaker_enabled"
+                            android:id="@+id/iv_speaker"
+                            />
+                    </LinearLayout>
+                </RelativeLayout>
+                <!-- Third bottom panel Button -->
+                <RelativeLayout
+                    style="@style/bottomLLPanelButtonStyle"
+                    android:clickable="true"
+                    android:id="@+id/videocamera_button_bg_id"
+                    android:onClick="videoMakingButtonClicked"
+                    android:background = "@drawable/bottom_panel_button_color_clickable"
+                    >
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:weightSum="100"
+                        android:gravity="bottom|center"
+                        android:orientation="vertical"
+                        >
+                        <!-- Photocamera Icon -->
+                        <ImageView
+                            android:src="@mipmap/video_camera"
+                            android:layout_width="match_parent"
+                            android:id="@+id/video_cam_icon_id"
+                            android:layout_height="0dp"
+                            android:layout_weight="60"
+                            android:clickable="false"
+                            />
+                        <TextView
+                            style="@style/menuTextViewStyle"
+                            android:text="@string/video"
+                            />
+                    </LinearLayout>
+                    <!-- Speaker (Sound when picture shoot) icon -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:weightSum="100"
+                        android:orientation="vertical"
+                        >
+                        <ImageView
+                            android:layout_gravity="right"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="40"
+                            android:padding="4dp"
+                            android:clickable="true"
+                            android:onClick="microphoneButtonClicked"
+                            android:src="@mipmap/microphone_active"
+                            android:id="@+id/iv_micro"
+                            />
+                    </LinearLayout>
+                </RelativeLayout>
             </LinearLayout>
-            <!-- Second bottom panel Button -->
-            <RelativeLayout
-                style="@style/bottomLLPanelButtonStyle"
-                android:clickable="true"
-                android:id="@+id/photocamera_button_bg_id"
-                android:background = "@drawable/bottom_panel_button_color_clickable"
-                android:onClick="pictureMakingButtonClicked"
-                >
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:weightSum="100"
-                    android:gravity="center|bottom"
-                    android:orientation="vertical"
-                    >
-                    <!-- Photocamera Icon -->
-                    <ImageView
-                        android:src="@mipmap/photocamera"
-                        android:layout_width="wrap_content"
-                        android:id="@+id/photo_cam_icon_id"
-                        android:layout_height="wrap_content"
-                        android:clickable="false"
-                        />
-                    <TextView
-                        style="@style/menuTextViewStyle"
-                        android:text="@string/camera"
-                        />
-                </LinearLayout>
-                <!-- Speaker (Sound when picture shoot) icon -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:weightSum="100"
-                    android:orientation="vertical"
-                    >
-                    <ImageView
-                        android:layout_gravity="right"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_weight="40"
-                        android:padding="4dp"
-                        android:onClick="photoSoundButtonClicked"
-                        android:src="@mipmap/speaker_enabled"
-                        android:id="@+id/iv_speaker"
-                        />
-                </LinearLayout>
-            </RelativeLayout>
-            <!-- Third bottom panel Button -->
-            <RelativeLayout
-                style="@style/bottomLLPanelButtonStyle"
-                android:clickable="true"
-                android:id="@+id/videocamera_button_bg_id"
-                android:onClick="videoMakingButtonClicked"
-                android:background = "@drawable/bottom_panel_button_color_clickable"
-                >
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:weightSum="100"
-                    android:gravity="center|bottom"
-                    android:orientation="vertical"
-                    >
-                    <!-- Photocamera Icon -->
-                    <ImageView
-                        android:src="@mipmap/video_camera"
-                        android:layout_width="wrap_content"
-                        android:id="@+id/video_cam_icon_id"
-                        android:layout_height="wrap_content"
-                        android:clickable="false"
-                        />
-                    <TextView
-                        style="@style/menuTextViewStyle"
-                        android:text="@string/video"
-                        />
-                </LinearLayout>
-                <!-- Speaker (Sound when picture shoot) icon -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:weightSum="100"
-                    android:orientation="vertical"
-                    >
-                    <ImageView
-                        android:layout_gravity="right"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_weight="40"
-                        android:padding="4dp"
-                        android:onClick="microphoneButtonClicked"
-                        android:src="@mipmap/microphone_active"
-                        android:id="@+id/iv_micro"
-                        />
-                </LinearLayout>
-            </RelativeLayout>
         </LinearLayout>
-    </LinearLayout>
+    </RelativeLayout>
+
 
     <!-- VIEWFINDER and TEXT OVER CAM VIEW-->
     <LinearLayout
@@ -170,15 +178,10 @@
         android:weightSum="100"
         android:gravity="top|center"
         >
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="9"
-            />
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="76">
+            android:layout_weight="85">
             <!-- Text Over Camera VIEW FINDER -->
             <LinearLayout
                 android:layout_width="match_parent"

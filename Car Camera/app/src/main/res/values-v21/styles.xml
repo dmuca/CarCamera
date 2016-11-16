@@ -9,9 +9,9 @@
     </style>
 
 
-    <style name="AppTheme.ActionBar.Transparent" parent="AppTheme">
-        <item name="colorPrimaryDark">@color/transparentColor</item>
-        <item name="colorPrimary">@color/transparentColor</item>
-        <item name="android:statusBarColor">@color/transparentColor</item>
+    <style name="AppTheme.ActionBar.TopBarPanel" parent="AppTheme">
+        <item name="colorPrimaryDark">@color/optionsMenuBackgroundColor</item>
+        <item name="colorPrimary">@color/optionsMenuBackgroundColor</item>
+        <item name="android:statusBarColor">#000000</item>
     </style>
 </resources>
