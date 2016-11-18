@@ -28,6 +28,8 @@ public class CameraSettings extends PreferenceFragment implements SharedPreferen
     private List <String> sceneModeEntries_L, whiteBalanceEntries_L
             , antibandingEntries_L, exposureCompensationEntries_L, fallingInCaseOfErrorEntries_L;
     private SharedPreferences sharedPref;
+
+
     // Declare CURRENT CAMERA MODE
     private String
             currentCamMode
@@ -46,6 +48,7 @@ public class CameraSettings extends PreferenceFragment implements SharedPreferen
     boolean sceneModeSupported = true
             , whiteBalanceSupported = true
             , antibandingSupported = true;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -453,6 +456,10 @@ public class CameraSettings extends PreferenceFragment implements SharedPreferen
         fallingInCaseOfError.setEnabled(!currentCamMode.equals("0"));
 
     }
+
+
+
+
     ListPreference camMode, sceneMode,whiteBalance,exposureCompensation,antibanding,fallingInCaseOfError;
     private void readSharedPreferencesForEachCameraMode(String camMode){
         // camera mode NOT SET
