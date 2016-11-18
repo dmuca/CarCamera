@@ -63,7 +63,9 @@ public class CameraSettings extends PreferenceFragment implements SharedPreferen
         // SCENE MODE set Entries and Entry
         try {
             sceneModeEntries_L = myCameraObj.getParameters().getSupportedSceneModes();
-            sceneModeSupported = true;
+
+            // scene mode supported ? TRUE : FALSE
+            sceneModeSupported = sceneModeEntries_L != null;
         }
         catch (NullPointerException e){
             // NULL if NOT supported
@@ -312,7 +314,7 @@ public class CameraSettings extends PreferenceFragment implements SharedPreferen
         fallingInCaseOfError = (ListPreference) findPreference(getResources().getString(R.string.SP_camera_falling_in_case_of_error));
 
 
-        String curCamMode = sharedPref.getString(getResources().getString(R.string.SP_camera_mode), "0");
+        //String curCamMode = sharedPref.getString(getResources().getString(R.string.SP_camera_mode), "0");
         // SHAREDPREFERENCES
             //sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
 
@@ -324,49 +326,58 @@ public class CameraSettings extends PreferenceFragment implements SharedPreferen
         currentCamMode = sharedPref.getString(getResources().getString(R.string.SP_camera_mode), "0");
         camMode.setSummary(cameraModeEntries[Integer.parseInt(currentCamMode)]);
         camMode.setValue(currentCamMode);
-        // get EACH values (expressed in Strings)
-        if (!curCamMode.equals("0")) {
+        // get EACH values (expressed in Strings), 0 is AUTO MODE value
+        if (!currentCamMode.equals("0")) {
 
             SharedPreferences.Editor editor = sharedPref.edit();
-            int defaultSceneMode, defaultWhiteBalance;
+            // -1 means no default mode
+            int defaultSceneMode = -1, defaultWhiteBalance;
             // DAYLIGHT
-            if (currentCamMode.equals("1")) {
-                defaultSceneMode = myCameraObj.getParameters().getSupportedSceneModes().indexOf("landscape");
-                defaultWhiteBalance = myCameraObj.getParameters().getSupportedWhiteBalance().indexOf("auto");
-            }
-            // SUNNY
-            else if (currentCamMode.equals("2")) {
-                defaultSceneMode = myCameraObj.getParameters().getSupportedSceneModes().indexOf("beach");
-                defaultWhiteBalance = myCameraObj.getParameters().getSupportedWhiteBalance().indexOf("daylight");
-            }
-            // CLOUDY
-            else if (currentCamMode.equals("3")) {
-                defaultSceneMode = myCameraObj.getParameters().getSupportedSceneModes().indexOf("candlelight");
-                defaultWhiteBalance = myCameraObj.getParameters().getSupportedWhiteBalance().indexOf("cloudy-daylight");
-            }
-            // MOONLIGHT
-            else if (currentCamMode.equals("4")) {
-                defaultSceneMode = myCameraObj.getParameters().getSupportedSceneModes().indexOf("fireworks");
-                defaultWhiteBalance = myCameraObj.getParameters().getSupportedWhiteBalance().indexOf("twilight");
-            }
-            // DARK NIGHT
-            else if (currentCamMode.equals("5")) {
-                defaultSceneMode = myCameraObj.getParameters().getSupportedSceneModes().indexOf("night");
-                defaultWhiteBalance = myCameraObj.getParameters().getSupportedWhiteBalance().indexOf("shade");
-            }
-            // CITY NIGHT
-            else if (currentCamMode.equals("6")) {
-                defaultSceneMode = myCameraObj.getParameters().getSupportedSceneModes().indexOf("party");
-                defaultWhiteBalance = myCameraObj.getParameters().getSupportedWhiteBalance().indexOf("fluorescent");
-            }
-            // CUSTOM
-            else if (currentCamMode.equals("7")) {
-                defaultSceneMode = 0;
-                defaultWhiteBalance = 0;
-            }
-            else{
-                // something is WRONG -- ERROR that line should NOT be invoked !
-                defaultSceneMode = defaultWhiteBalance = -2;
+            switch (currentCamMode) {
+                case "1":
+                    if (sceneModeSupported)
+                        defaultSceneMode = myCameraObj.getParameters().getSupportedSceneModes().indexOf("landscape");
+                    defaultWhiteBalance = myCameraObj.getParameters().getSupportedWhiteBalance().indexOf("auto");
+                    break;
+                // SUNNY
+                case "2":
+                    if (sceneModeSupported)
+                        defaultSceneMode = myCameraObj.getParameters().getSupportedSceneModes().indexOf("beach");
+                    defaultWhiteBalance = myCameraObj.getParameters().getSupportedWhiteBalance().indexOf("daylight");
+                    break;
+                // CLOUDY
+                case "3":
+                    if (sceneModeSupported)
+                        defaultSceneMode = myCameraObj.getParameters().getSupportedSceneModes().indexOf("candlelight");
+                    defaultWhiteBalance = myCameraObj.getParameters().getSupportedWhiteBalance().indexOf("cloudy-daylight");
+                    break;
+                // MOONLIGHT
+                case "4":
+                    if (sceneModeSupported)
+                        defaultSceneMode = myCameraObj.getParameters().getSupportedSceneModes().indexOf("fireworks");
+                    defaultWhiteBalance = myCameraObj.getParameters().getSupportedWhiteBalance().indexOf("twilight");
+                    break;
+                // DARK NIGHT
+                case "5":
+                    if (sceneModeSupported)
+                        defaultSceneMode = myCameraObj.getParameters().getSupportedSceneModes().indexOf("night");
+                    defaultWhiteBalance = myCameraObj.getParameters().getSupportedWhiteBalance().indexOf("shade");
+                    break;
+                // CITY NIGHT
+                case "6":
+                    if (sceneModeSupported)
+                        defaultSceneMode = myCameraObj.getParameters().getSupportedSceneModes().indexOf("party");
+                    defaultWhiteBalance = myCameraObj.getParameters().getSupportedWhiteBalance().indexOf("fluorescent");
+                    break;
+                // CUSTOM
+                case "7":
+                    defaultSceneMode = 0;
+                    defaultWhiteBalance = 0;
+                    break;
+                default:
+                    // something is WRONG -- ERROR that line should NOT be invoked !
+                    defaultSceneMode = defaultWhiteBalance = -2;
+                    break;
             }
             // in CASE phone has NO SUCH MODE, then change it to index 0, it's AUTO value
             defaultSceneMode = defaultSceneMode == - 1 ? 0 : defaultSceneMode;
@@ -423,13 +434,23 @@ public class CameraSettings extends PreferenceFragment implements SharedPreferen
 
 
 
-
+/*
         // DISABLE or ENABLE ListPreference depend on Camera Mode if (Not set), then disable
         sceneMode.setEnabled(!curCamMode.equals("0") && sceneModeSupported);
         whiteBalance.setEnabled(!curCamMode.equals("0") && whiteBalanceSupported);
         exposureCompensation.setEnabled(!curCamMode.equals("0"));
         antibanding.setEnabled(!curCamMode.equals("0") && antibandingSupported);
         fallingInCaseOfError.setEnabled(!curCamMode.equals("0"));
+        */
+
+
+
+        // DISABLE or ENABLE ListPreference depend on Camera Mode if (Not set), then disable
+        sceneMode.setEnabled(!currentCamMode.equals("0") && sceneModeSupported);
+        whiteBalance.setEnabled(!currentCamMode.equals("0") && whiteBalanceSupported);
+        exposureCompensation.setEnabled(!currentCamMode.equals("0"));
+        antibanding.setEnabled(!currentCamMode.equals("0") && antibandingSupported);
+        fallingInCaseOfError.setEnabled(!currentCamMode.equals("0"));
 
     }
     ListPreference camMode, sceneMode,whiteBalance,exposureCompensation,antibanding,fallingInCaseOfError;
