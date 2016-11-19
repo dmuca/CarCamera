@@ -558,4 +558,9 @@
     <string name="cannot_read_files_folder">I cannot read folder with videos/photos directory, sorry.</string>
     <string name="write_settings_perm_not_granted">Write Settings Permission not granted, app needs it to work properly.</string>
     <string name="no_back_camera_in_device">Sorry, your device does\'t have back camera.</string>
+    <string name="low_quality">Low Quality</string>
+    <string name="high_quality">High Quality</string>
+    <string name="memory_error">Memory Error</string>
+    <string name="allow_app_to_change_system_settings">Please, allow the application to modify system settings, so I can change app brightness independently from the system.</string>
+    <string name="app_needs_perm_to_wrk_properly">Application needs some permission to work properly.</string>
 </resources>

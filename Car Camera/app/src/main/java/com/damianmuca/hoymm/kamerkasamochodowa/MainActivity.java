@@ -57,7 +57,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements Runnable {
 
-    private AlertDialog noBackCameraOrInUse_A;
+    private AlertDialog noBackCameraOrInUse_A, needSystemPermissionAD;
 
     static private List <Camera.Size> cameraSizesL, photoSizesL;
     ArrayList<File> listOfVideoFiles = null, listOfPictureFiles = null;
@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
         setContentView(R.layout.activity_main);
         // initializate objects
+        dialogForGetPermissionIsCurShowing = false;
         photoCaptureSound = MediaPlayer.create(this, R.raw.photograpy_capture_sound);
         modeButtonFromChoosingPanel = (LinearLayout) findViewById(R.id.choose_mode_panel_id);
         modeButtonToOpenPanel = (LinearLayout) findViewById(R.id.change_mode_button_id);
@@ -138,6 +139,26 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                         finish();
                     }
                 })).create();
+
+
+        // need system permission to modify system settings ALERT DIALOG
+        needSystemPermissionAD =
+                new AlertDialog.Builder(context).setTitle(R.string.app_needs_perm_to_wrk_properly)
+                        .setMessage(R.string.allow_app_to_change_system_settings)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent grantIntent = new   Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+                                startActivity(grantIntent);
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogForGetPermissionIsCurShowing = false;
+                            }
+                        })
+                        .create();
 
 
 
@@ -505,6 +526,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         return true;
     }
 
+    private boolean dialogForGetPermissionIsCurShowing;
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -682,7 +705,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     public void pictureMakingButtonClicked(View view) {
         // if NO CAMERA PERMISSION GRANTED
         if (!ifAllThreePermissionNeededToRunGranted())
-            getFourThreePermisions();
+            getThreePermisions();
         // permission GRANTED program can make pictures
         else {
 
@@ -708,10 +731,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     // VIDEO MAKING BUTTON
     public void videoMakingButtonClicked(View view) {
         // if NO CAMERA PERMISSION GRANTED
-        if (!ifAllThreePermissionNeededToRunGranted())
-            getFourThreePermisions();
-        // permission GRANTED program can make video
-        else {
+        if (ifAllThreePermissionNeededToRunGranted()){
             // --- TAKE CARE OF VISUAL EFFECTS ---
             makingVideoActivated = !makingVideoActivated;
             RelativeLayout videoMakingButton = (RelativeLayout) findViewById(R.id.videocamera_button_bg_id);
@@ -734,6 +754,9 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             videoMakingButton.setActivated(makingVideoActivated);
             takingPictureRefresh();
         }
+        // permission GRANTED program can make video
+        else
+            getThreePermisions();
     }
 
     private boolean prepareVideoRecorder(){
@@ -807,10 +830,14 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 videoEncoderIndex = sharedPref.getString(getResources().getString(R.string.SP_video_encoder), "0");
             }
             else{
-                videoFileFormatIndex = sharedPref.getString(getResources().getString(R.string.SP_video_custom_file_format), "0");
-                frameRateIndex = sharedPref.getString(getResources().getString(R.string.SP_video_custom_framerate), "0");
-                bitrateIndex = sharedPref.getString(getResources().getString(R.string.SP_video_custom_bitrate), "0");
-                videoEncoderIndex = sharedPref.getString(getResources().getString(R.string.SP_video_custom_encoder), "0");
+                videoFileFormatIndex =
+                        String.valueOf(sharedPref.getInt(getResources().getString(R.string.SP_video_custom_file_format), 0));
+                frameRateIndex =
+                        String.valueOf(sharedPref.getInt(getResources().getString(R.string.SP_video_custom_framerate), 0));
+                bitrateIndex =
+                        String.valueOf(sharedPref.getInt(getResources().getString(R.string.SP_video_custom_bitrate), 0));
+                videoEncoderIndex =
+                        String.valueOf(sharedPref.getInt(getResources().getString(R.string.SP_video_custom_encoder), 0));
             }
 
             int frameRateProfile;
@@ -861,10 +888,23 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 default:
                     videoEncoderProfile = MediaRecorder.VideoEncoder.H264;
             }
-            curVideoBitrateProfile = (int) Math.ceil(cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).width
-                    * cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).height
-                    * frameRateProfile * StaticValues.bitrateMultiplication); // round to ceil
-            curVideoBitrateProfile = (int) (curVideoBitrateProfile * bitrateMultiply[Integer.valueOf(bitrateIndex)]);
+
+
+            // other Size
+            if (Integer.valueOf(videoQualityMode) >= 3) {
+                curVideoBitrateProfile = (int) Math.ceil(cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).width
+                        * cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).height
+                        * frameRateProfile * StaticValues.bitrateMultiplication); // round to ceil
+                curVideoBitrateProfile = (int) (curVideoBitrateProfile * bitrateMultiply[Integer.valueOf(bitrateIndex)]);
+            }
+            // HQ res
+            else if (Integer.valueOf(videoQualityMode) == 0){
+                curVideoBitrateProfile = CamcorderProfile.get( CamcorderProfile.QUALITY_HIGH).videoBitRate;
+            }
+            // LQ res
+            else {
+                curVideoBitrateProfile = CamcorderProfile.get( CamcorderProfile.QUALITY_LOW).videoBitRate;
+            }
 
 
             // enable sound
@@ -1093,6 +1133,31 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     }
 
     private boolean ifAllThreePermissionNeededToRunGranted() {
+        boolean first = ContextCompat.checkSelfPermission
+                (this, Manifest.permission.WRITE_SETTINGS) == PackageManager.PERMISSION_GRANTED;
+        boolean second = Build.VERSION.SDK_INT < Build.VERSION_CODES.M;
+
+        int third = -1;
+        if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
+            third = Settings.System.canWrite(context) ? 1 : 0;
+
+
+
+
+        synchronized (this) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                    !Settings.System.canWrite(context)
+                    && !dialogForGetPermissionIsCurShowing) {
+                dialogForGetPermissionIsCurShowing = true;
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        needSystemPermissionAD.show();
+                    }
+                });
+            }
+        }
 
         return (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
             PackageManager.PERMISSION_GRANTED &&
@@ -1100,8 +1165,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
             (ContextCompat.checkSelfPermission
                     (this, Manifest.permission.WRITE_SETTINGS) == PackageManager.PERMISSION_GRANTED ||
-                    Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
-                    Settings.System.canWrite(context)) &&   //warrning but line above we check it, so no way to get here API<23
+                    (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ||
+                    Settings.System.canWrite(context))) &&   //warrning but line above we check it, so no way to get here API<23
 
             ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                     PackageManager.PERMISSION_GRANTED);
@@ -1369,6 +1434,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
         context = this;
 
+        // shen we come back from "Can modify system settings options", let program check again permissions
+        dialogForGetPermissionIsCurShowing = false;
 
         // RUN function objects resume
         myThread = new Thread(this);
@@ -1385,7 +1452,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
     @Override
     protected void onStart() {
-        if(getFourThreePermisions()){
+        if(getThreePermisions()){
             // if there is possibility to get PERMISSION for that particular DEVICE, then do so
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M &&
                         Settings.System.canWrite(context) &&
@@ -1426,7 +1493,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         }
     }
 
-    private boolean getFourThreePermisions() {
+    private boolean getThreePermisions() {
         // Here, thisActivity is the current activity -- CAMERA PERMISSION
         // Write Settings only needed when API device is >=23
         if (
@@ -1710,7 +1777,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
         // if UNABLE TO READ DIRECTORIES, show ALERT and close app
         if (!result)
-            new AlertDialog.Builder(context).setTitle("Memory Error")
+            new AlertDialog.Builder(context).setTitle(R.string.memory_error)
                 .setMessage(R.string.cannot_read_files_folder)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override

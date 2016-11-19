@@ -15,7 +15,6 @@ import android.support.v4.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static com.damianmuca.hoymm.kamerkasamochodowa.MainActivity.getCameraInstance;
@@ -61,7 +60,7 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
 
         // enable changing subsettings like (framerate, resolution... ) only when custom resolution option is activated
         ListPreference videoQualityLP = (ListPreference) findPreference(getResources().getString(R.string.SP_video_quality));
-        enableOrDisableSubsettings(Integer.valueOf(videoQualityLP.getValue()));
+        enableOrDisableSubsettingsAndRefreshItsSummaries(Integer.valueOf(videoQualityLP.getValue()));
 
 
         // SUMMARIES
@@ -78,7 +77,7 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
                 if (key.equals(getResources().getString(R.string.SP_video_quality))) {
                     currentPreference
                             .setSummary(videoQualityEntries_L.get(Integer.parseInt(sharedPreferences.getString(key, "0"))));
-                    enableOrDisableSubsettings(Integer.parseInt(sharedPreferences.getString(key, "0")));
+                    enableOrDisableSubsettingsAndRefreshItsSummaries(Integer.parseInt(sharedPreferences.getString(key, "0")));
                 }
 
                 // check IF i have permission to use MICROPHONE / change VOLUME enable/disabled
@@ -174,7 +173,7 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
         }
     }
 
-    private void enableOrDisableSubsettings(int videoQualityIndex) {
+    private void enableOrDisableSubsettingsAndRefreshItsSummaries(int videoQualityIndex) {
 
         ListPreference videoResolutionLP = (ListPreference)
                 findPreference(getResources().getString(R.string.SP_video_resolution));
@@ -191,7 +190,7 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
         ListPreference fileformatLP = (ListPreference)
                 findPreference(getResources().getString(R.string.SP_video_file_format));
 
-        // if CUSTOM
+        // if CUSTOM VIDEO QUALITY
         if (videoQualityIndex==2){  // index of 2 equals CUSTOM RESOLUTION
             videoResolutionLP.setEnabled(true);
             videoEncoderLP.setEnabled(true);
@@ -244,6 +243,7 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
             }
                 // 0 - High Quality
             else if (videoQualityIndex == 0) {
+
                 videoResolutionLP.setSummary(videoResolutionEntries_L.get(0));
 
                 minBitrate = (int) Math.ceil(
@@ -256,7 +256,10 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
             }
                 // 1 - Low Quality
             else if (videoQualityIndex == 1) {
-                videoResolutionLP.setSummary(videoResolutionEntries_L.get(videoResolutionEntries_L.size() - 3));
+
+                videoResolutionLP.setSummary(videoResolutionEntries_L.get(videoResolutionEntries_L.size() - 1));
+
+
                 minBitrate = (int) Math.ceil(
                         sortedResolutionsL.get(videoResolutionEntries_L.size() - 3).width
                             *sortedResolutionsL.get(videoResolutionEntries_L.size() - 3).height
@@ -282,6 +285,29 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
 
     }
 
+   /* public static int getHighQualityIndex() {
+
+        int result = 0;
+        // find index that has HQ quality, getCameraSizesL() is ordered from biggest to smallest resolutions
+        do{
+            result++;
+        }
+        while (MainActivity.getCameraSizesL().get(result).width > 1000 &&
+                MainActivity.getCameraSizesL().get(result).width > 1000);
+        return result;
+    }
+
+    public static int getLowQualityIndex() {
+
+        int result = MainActivity.getCameraSizesL().size()-1;
+        // find index that has LOW quality, getCameraSizesL() is ordered from biggest to smallest resolutions
+        do
+            result--;
+        while (MainActivity.getCameraSizesL().get(result).width < 500 &&
+                MainActivity.getCameraSizesL().get(result).width < 500);
+        return result;
+    }
+*/
     private void setEntriesAndEntryValues() {
         // Video Quality
         setEntriesAndEntryValuesForVideoQuality();
