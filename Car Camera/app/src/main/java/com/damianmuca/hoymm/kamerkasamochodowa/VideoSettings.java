@@ -261,8 +261,8 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
 
 
                 minBitrate = (int) Math.ceil(
-                        sortedResolutionsL.get(videoResolutionEntries_L.size() - 3).width
-                            *sortedResolutionsL.get(videoResolutionEntries_L.size() - 3).height
+                        sortedResolutionsL.get(videoResolutionEntries_L.size() - 1).width
+                            *sortedResolutionsL.get(videoResolutionEntries_L.size() - 1).height
                             *30
                             *StaticValues.bitrateMultiplication
                             *bitrateQualityMultipler

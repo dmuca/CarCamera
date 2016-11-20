@@ -818,7 +818,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
             }
         }
-        // Custom, width x height
+        // Resolution or Custom Video Mode
         else{
             String videoFileFormatIndex, frameRateIndex, bitrateIndex, videoEncoderIndex;
             // some RESOLUTION (not-custom)
@@ -829,6 +829,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 bitrateIndex = sharedPref.getString(getResources().getString(R.string.SP_video_bitrate), "0");
                 videoEncoderIndex = sharedPref.getString(getResources().getString(R.string.SP_video_encoder), "0");
             }
+            // CUSTOM mode
             else{
                 videoFileFormatIndex =
                         String.valueOf(sharedPref.getInt(getResources().getString(R.string.SP_video_custom_file_format), 0));
@@ -890,7 +891,14 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             }
 
 
-            // other Size
+            // Camera Supported Resolution Size
+            if (Integer.valueOf(videoQualityMode) >= 3) {
+                curVideoBitrateProfile = (int) Math.ceil(cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).width
+                        * cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).height
+                        * frameRateProfile * StaticValues.bitrateMultiplication); // round to ceil
+                curVideoBitrateProfile = (int) (curVideoBitrateProfile * bitrateMultiply[Integer.valueOf(bitrateIndex)]);
+            }
+            // Camera Custom Resolution Size
             if (Integer.valueOf(videoQualityMode) >= 3) {
                 curVideoBitrateProfile = (int) Math.ceil(cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).width
                         * cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).height
@@ -903,7 +911,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             }
             // LQ res
             else {
-                curVideoBitrateProfile = CamcorderProfile.get( CamcorderProfile.QUALITY_LOW).videoBitRate;
+                curVideoBitrateProfile = CamcorderProfile.get( CamcorderProfile.QUALITY_HIGH).videoBitRate;
             }
 
 
