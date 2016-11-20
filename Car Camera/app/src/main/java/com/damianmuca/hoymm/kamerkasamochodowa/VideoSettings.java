@@ -58,9 +58,7 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
 
         setEntriesAndEntryValues();
 
-        // enable changing subsettings like (framerate, resolution... ) only when custom resolution option is activated
-        ListPreference videoQualityLP = (ListPreference) findPreference(getResources().getString(R.string.SP_video_quality));
-        enableOrDisableSubsettingsAndRefreshItsSummaries(Integer.valueOf(videoQualityLP.getValue()));
+        enableOrDisableSubsettingsAndRefreshItsSummaries();
 
 
         // SUMMARIES
@@ -77,7 +75,7 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
                 if (key.equals(getResources().getString(R.string.SP_video_quality))) {
                     currentPreference
                             .setSummary(videoQualityEntries_L.get(Integer.parseInt(sharedPreferences.getString(key, "0"))));
-                    enableOrDisableSubsettingsAndRefreshItsSummaries(Integer.parseInt(sharedPreferences.getString(key, "0")));
+                    enableOrDisableSubsettingsAndRefreshItsSummaries();
                 }
 
                 // check IF i have permission to use MICROPHONE / change VOLUME enable/disabled
@@ -106,11 +104,13 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
                     SharedPreferences.Editor editor = sharedPref.edit();
                     // if  VIDEO RESOLUTION
                     if (key.equals(getResources().getString(R.string.SP_video_resolution))) {
-                            currentPreference.setSummary
-                                    (videoResolutionEntries_L.get(Integer.parseInt(sharedPreferences.getString(key, "0"))));
                         // save saved data into SharedPreferences DB
                         editor.putInt(getResources().getString(R.string.SP_video_custom_resolution)
                                 , Integer.parseInt(sharedPreferences.getString(key, "0")));
+                        editor.apply();
+
+                        setEntriesAndEntryValuesForBitrate();
+                        enableOrDisableSubsettingsAndRefreshItsSummaries();
                     }
                     // if  VIDEO ENCODER
                     else if (key.equals(getResources().getString(R.string.SP_video_encoder))) {
@@ -119,6 +119,7 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
                         // save saved data into SharedPreferences DB
                         editor.putInt(getResources().getString(R.string.SP_video_custom_encoder)
                                 , Integer.parseInt(sharedPreferences.getString(key, "0")));
+                        editor.apply();
                     }
                     // if  VIDEO BITRATE
                     else if (key.equals(getResources().getString(R.string.SP_video_bitrate))) {
@@ -127,14 +128,18 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
                         // save saved data into SharedPreferences DB
                         editor.putInt(getResources().getString(R.string.SP_video_custom_bitrate)
                                 , Integer.parseInt(sharedPreferences.getString(key, "0")));
+                        editor.apply();
+
                     }
                     // if  VIDEO FRAMERATE
                     else if (key.equals(getResources().getString(R.string.SP_video_framerate))) {
-                        currentPreference
-                                .setSummary(framerateEntries_L.get(Integer.parseInt(sharedPreferences.getString(key, "0"))));
                         // save saved data into SharedPreferences DB
                         editor.putInt(getResources().getString(R.string.SP_video_custom_framerate)
                                 , Integer.parseInt(sharedPreferences.getString(key, "0")));
+                        editor.apply();
+
+                        setEntriesAndEntryValuesForBitrate();
+                        enableOrDisableSubsettingsAndRefreshItsSummaries();
                     }
                     // if  VIDEO FILE FORMAT
                     else if (key.equals(getResources().getString(R.string.SP_video_file_format))) {
@@ -143,8 +148,8 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
                         // save saved data into SharedPreferences DB
                         editor.putInt(getResources().getString(R.string.SP_video_custom_file_format)
                                 , Integer.parseInt(sharedPreferences.getString(key, "0")));
+                        editor.apply();
                     }
-                    editor.apply();
                 }
                 // Video Focus Mode
                 if (key.equals(getResources().getString(R.string.SP_video_focus_mode)))
@@ -166,7 +171,11 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
         }
     }
 
-    private void enableOrDisableSubsettingsAndRefreshItsSummaries(int videoQualityIndex) {
+    private void enableOrDisableSubsettingsAndRefreshItsSummaries() {
+
+        // enable changing subsettings like (framerate, resolution... ) only when custom resolution option is activated
+        ListPreference videoQualityLP = (ListPreference) findPreference(getResources().getString(R.string.SP_video_quality));
+        int videoQualityIndex = Integer.valueOf(videoQualityLP.getValue());
 
         ListPreference videoResolutionLP = (ListPreference)
                 findPreference(getResources().getString(R.string.SP_video_resolution));
@@ -436,8 +445,28 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
     }
 
     private void setEntriesAndEntryValuesForBitrate() {
-        // VIDEO BITRATE
-        refreshEntriesAndEntryValuesForBitrate(640, 480, 30);
+
+
+        String videoQuality = sharedPref.getString(getResources().getString(R.string.SP_video_quality), "0");
+        // Video CUSTOM
+        int framerateValues [] = {30, 25, 20, 15, 10};
+        int indexOfCurResolution, indexOfFrameRate;
+        if (videoQuality.equals("2")){
+            indexOfCurResolution = sharedPref.getInt(getResources().getString(R.string.SP_video_custom_resolution), 0);
+            indexOfFrameRate = sharedPref.getInt(getResources().getString(R.string.SP_video_custom_framerate), 0);
+
+        }
+        // not custom (HQ, LQ or Device Resolution Supported)
+        else{
+            indexOfCurResolution = sharedPref.getInt(getResources().getString(R.string.SP_video_custom_resolution), 0);
+            indexOfFrameRate = sharedPref.getInt(getResources().getString(R.string.SP_video_custom_framerate), 0);
+        }
+        // Refresh Entries/Entry Values for BITRATE
+        refreshEntriesAndEntryValuesForBitrate(
+                sortedResolutionsL.get(indexOfCurResolution).width
+                , sortedResolutionsL.get(indexOfCurResolution).height
+                , framerateValues[indexOfFrameRate]);
+
 
 
         // ################   Initializate VIDEO BITRATE (entry values/ entries) ################
