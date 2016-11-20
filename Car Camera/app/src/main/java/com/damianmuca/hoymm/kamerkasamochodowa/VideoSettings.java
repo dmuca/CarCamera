@@ -106,15 +106,8 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
                     SharedPreferences.Editor editor = sharedPref.edit();
                     // if  VIDEO RESOLUTION
                     if (key.equals(getResources().getString(R.string.SP_video_resolution))) {
-                        if (Integer.parseInt(sharedPreferences.getString(key, "0")) != videoResolutionEntries_L.size()-1)
-                        {
                             currentPreference.setSummary
                                     (videoResolutionEntries_L.get(Integer.parseInt(sharedPreferences.getString(key, "0"))));
-                        }
-                        // when CUSTOM RESOLUTION
-                        else{
-
-                        }
                         // save saved data into SharedPreferences DB
                         editor.putInt(getResources().getString(R.string.SP_video_custom_resolution)
                                 , Integer.parseInt(sharedPreferences.getString(key, "0")));
@@ -285,29 +278,6 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
 
     }
 
-   /* public static int getHighQualityIndex() {
-
-        int result = 0;
-        // find index that has HQ quality, getCameraSizesL() is ordered from biggest to smallest resolutions
-        do{
-            result++;
-        }
-        while (MainActivity.getCameraSizesL().get(result).width > 1000 &&
-                MainActivity.getCameraSizesL().get(result).width > 1000);
-        return result;
-    }
-
-    public static int getLowQualityIndex() {
-
-        int result = MainActivity.getCameraSizesL().size()-1;
-        // find index that has LOW quality, getCameraSizesL() is ordered from biggest to smallest resolutions
-        do
-            result--;
-        while (MainActivity.getCameraSizesL().get(result).width < 500 &&
-                MainActivity.getCameraSizesL().get(result).width < 500);
-        return result;
-    }
-*/
     private void setEntriesAndEntryValues() {
         // Video Quality
         setEntriesAndEntryValuesForVideoQuality();
