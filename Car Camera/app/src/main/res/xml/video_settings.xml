@@ -17,7 +17,7 @@
             android:entries="@array/e_video_custom_resolution"
             android:entryValues="@array/ev_video_custom_resolution"
             android:summary="Summary"
-            android:defaultValue="10" />
+            android:defaultValue="0" />
         <!-- Custom - Video Encoder -->
         <ListPreference
             android:key="@string/SP_video_encoder"

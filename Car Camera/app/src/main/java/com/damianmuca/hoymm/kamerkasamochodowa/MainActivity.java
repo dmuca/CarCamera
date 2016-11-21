@@ -57,7 +57,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements Runnable {
 
-    private AlertDialog noBackCameraOrInUse_A, needSystemPermissionAD;
+    private AlertDialog noBackCameraOrInUse_AD, needSystemPermissionAD;
 
     static private List <Camera.Size> cameraSizesL, photoSizesL;
     ArrayList<File> listOfVideoFiles = null, listOfPictureFiles = null;
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     LinearLayout modeButtonFromChoosingPanel;
     LinearLayout modeButtonToOpenPanel;
     ImageView modeButtonToOpenPanelIcon;
-    TextView modeButtonToOpenPanelTV;
+    private TextView modeButtonToOpenPanelTV, phtCamResolutionTV, videoCamResolutionTV;
 
     // modes list of choosing MODE PANEL
     LinearLayout [] modesListPanel = new LinearLayout[8];
@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     MediaRecorder mMediaRecorder;
     CameraPreview mPreview;
     private int videoRecordingTimeInSeconds;
-
+    private boolean refreshBottomResolutionsTV = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +119,9 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         modeButtonToOpenPanelIcon = (ImageView) findViewById(R.id.change_mode_button_img_id);
         modeButtonToOpenPanelTV = (TextView) findViewById(R.id.change_mode_button_tv_id);
 
+        phtCamResolutionTV = (TextView) findViewById(R.id.second_bottom_button_resolution_tv_id);
+        videoCamResolutionTV = (TextView) findViewById(R.id.third_bottom_button_resolution_tv_id);
+
         modesListPanel[0] = (LinearLayout) findViewById(R.id.not_set_button_ll_id);
         modesListPanel[1] = (LinearLayout) findViewById(R.id.daylight_button_ll_id);
         modesListPanel[2] = (LinearLayout) findViewById(R.id.sunny_button_ll_id);
@@ -130,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
         // initializate alert dialog when no facing back camera found
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        noBackCameraOrInUse_A = (builder.setMessage(R.string.no_back_camera_in_device)
+        noBackCameraOrInUse_AD = (builder.setMessage(R.string.no_back_camera_in_device)
                 .setCancelable(false)
                 .setIcon(android.R.drawable.stat_notify_error)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener(){
@@ -156,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogForGetPermissionIsCurShowing = false;
+                                finish();
                             }
                         })
                         .create();
@@ -680,7 +684,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             }
             // when no CAMERA DEVICE
             else
-                noBackCameraOrInUse_A.show();
+                noBackCameraOrInUse_AD.show();
         }
         // when unable to get CAMERA OBJECT (probably in use by another app)
         catch (Exception e){
@@ -1109,6 +1113,12 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        // Refresh Current Photo Camera and Video Camera TextView of resolution below buttons
+                        if (refreshBottomResolutionsTV) {
+                            refreshTextViewResolutionsBelowBottomPanelButtons();
+                            refreshBottomResolutionsTV = false;
+                        }
+
                         //stuff that updates ui
                         llMain.setBackgroundColor(getResources().getColor(R.color.transparentColor));
                     }
@@ -1137,6 +1147,48 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
         //Canvas myCanvas = myHolder.lockCanvas();
         //myHolder.unlockCanvasAndPost(myCanvas);
+    }
+
+    private void refreshTextViewResolutionsBelowBottomPanelButtons() {
+
+
+        // Photo Camera Resolution
+        String indexOfResolutionPhtCam = sharedPref.getString(getResources().
+                getString(R.string.SP_photo_resolution),"0");
+        phtCamResolutionTV.setText("("+photoSizesL.get(Integer.valueOf(indexOfResolutionPhtCam)).width + "x"
+                + photoSizesL.get(Integer.valueOf(indexOfResolutionPhtCam)).height + ")");
+
+
+        // Video Camera Resolution
+        String indexOfQualityVideoCam = sharedPref.getString(getResources().
+                getString(R.string.SP_video_quality),"0");
+
+        // HQ
+        if (Integer.valueOf(indexOfQualityVideoCam) == 0){
+            videoCamResolutionTV.setText("("+cameraSizesL.get(0).width + "x"
+                    + cameraSizesL.get(0).height + ")");
+        }
+        // LQ
+        else if (Integer.valueOf(indexOfQualityVideoCam) == 1){
+            videoCamResolutionTV.setText("("+cameraSizesL.get(cameraSizesL.size()-1).width + "x"
+                    + cameraSizesL.get(cameraSizesL.size()-1).height + ")");
+        }
+        // CUSTOM
+        else if (Integer.valueOf(indexOfQualityVideoCam) == 2){
+            String customResolutionVideoCamera =
+                    sharedPref.getString(getResources().getString(R.string.SP_video_resolution),"0");
+            videoCamResolutionTV.setText("("+cameraSizesL.get(Integer.valueOf(customResolutionVideoCamera)).width + "x"
+                    + cameraSizesL.get(Integer.valueOf(customResolutionVideoCamera)).height + ")");
+        }
+        else{
+            String supportedDeviceResolutionVideoCamera =
+                    sharedPref.getString(getResources().getString(R.string.SP_video_quality),"0");
+            videoCamResolutionTV.setText("("+cameraSizesL.get(Integer.valueOf(supportedDeviceResolutionVideoCamera)-3).width + "x"
+                    + cameraSizesL.get(Integer.valueOf(supportedDeviceResolutionVideoCamera)-3).height + ")");
+        }
+
+
+
     }
 
     private boolean ifAllThreePermissionNeededToRunGranted() {
@@ -1197,12 +1249,9 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                         // read DB picture resolution
                         Camera.Parameters localParams = myCameraObj.getParameters();
                         String indexOfSize = sharedPref.getString(getResources().
-                                getString(R.string.SP_photo_resolution),"default");
-                        if (indexOfSize.equals("default"))
-                            localParams.setPictureSize(1280,720);
-                        else
-                            localParams.setPictureSize(photoSizesL.get(Integer.valueOf(indexOfSize)).width,
-                                    photoSizesL.get(Integer.valueOf(indexOfSize)).height);
+                                getString(R.string.SP_photo_resolution),"0");
+                        localParams.setPictureSize(photoSizesL.get(Integer.valueOf(indexOfSize)).width,
+                                photoSizesL.get(Integer.valueOf(indexOfSize)).height);
 
                         // set Focus Modes
                         String curFocusMode = sharedPref.getString
@@ -1213,8 +1262,6 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                         myCameraObj.setParameters(localParams);
 
                         // DB has been readen
-
-
                         myCameraObj.takePicture(null, null, mPicture);
                         if (SP_Data.getIfPhotoCaptureSoundEnabled()) {
                             if (photoCaptureSound.isPlaying())
@@ -1435,6 +1482,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     @Override
     protected void onResume() {
         isThatOk = true;
+        refreshBottomResolutionsTV = true;
 
         // get SharedPref
         sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
@@ -1451,6 +1499,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
         // READ SHARED PREFERENCES DATA
         readSharedPrefData();
+
+        // refresh resolution taken by VideoCam and PhotoCam (TextView below buttons)
 
         // GET GENERAL SETTINGS
         disableOrEnableLockScreen();

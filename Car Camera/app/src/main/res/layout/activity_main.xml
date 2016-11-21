@@ -31,31 +31,25 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="85"/>
+                android:layout_weight="82"/>
             <!-- Bottom BUTTONS -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="15"
+                android:layout_weight="18"
                 android:orientation="horizontal"
                 android:background="@color/layoutColor"
                 android:weightSum="302"
                 >
                 <!-- First bottom panel Button -->
                 <LinearLayout
-                    style="@style/bottomLLPanelButtonStyle"
-                    android:clickable="true"
+                    style="@style/bottomRLPanelButtonStyle"
                     android:onClick="changeModeButtonClicked"
                     android:id="@+id/change_mode_button_id"
-                    android:gravity="bottom|center"
-                    android:background = "@drawable/bottom_panel_button_color_clickable"
                     >
                     <ImageView
-                        android:layout_width="wrap_content"
+                        style="@style/bottomBPanelButtonImgViewStyle"
                         android:id="@+id/change_mode_button_img_id"
-                        android:clickable="false"
-                        android:layout_height="0dp"
-                        android:layout_weight="60"
                         android:src="@mipmap/modes"
                         />
                     <TextView
@@ -63,34 +57,36 @@
                         android:id="@+id/change_mode_button_tv_id"
                         android:text="@string/mode"
                         />
+                    <TextView
+                        style="@style/menuResTextViewStyle"
+                        android:visibility="invisible"
+                        android:text="empty"
+                        android:id="@+id/first_bottom_button_resolution_tv_id"
+                        />
                 </LinearLayout>
                 <!-- Second bottom panel Button -->
                 <RelativeLayout
-                    style="@style/bottomLLPanelButtonStyle"
-                    android:clickable="true"
+                    style="@style/bottomRLPanelButtonStyle"
                     android:id="@+id/photocamera_button_bg_id"
-                    android:background = "@drawable/bottom_panel_button_color_clickable"
                     android:onClick="pictureMakingButtonClicked"
                     >
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:weightSum="100"
-                        android:gravity="bottom|center"
-                        android:orientation="vertical"
+                        style="@style/bottomLLPanelButtonStyle"
                         >
                         <!-- Photocamera Icon -->
                         <ImageView
+                            style="@style/bottomBPanelButtonImgViewStyle"
                             android:src="@mipmap/photocamera"
-                            android:layout_width="wrap_content"
                             android:id="@+id/photo_cam_icon_id"
-                            android:clickable="false"
-                            android:layout_height="0dp"
-                            android:layout_weight="60"
                             />
                         <TextView
                             style="@style/menuTextViewStyle"
                             android:text="@string/camera"
+                            />
+                        <TextView
+                            style="@style/menuResTextViewStyle"
+                            android:text=""
+                            android:id="@+id/second_bottom_button_resolution_tv_id"
                             />
                     </LinearLayout>
                     <!-- Speaker (Sound when picture shoot) icon -->
@@ -114,33 +110,29 @@
                 </RelativeLayout>
                 <!-- Third bottom panel Button -->
                 <RelativeLayout
-                    style="@style/bottomLLPanelButtonStyle"
-                    android:clickable="true"
+                    style="@style/bottomRLPanelButtonStyle"
                     android:id="@+id/videocamera_button_bg_id"
                     android:onClick="videoMakingButtonClicked"
-                    android:background = "@drawable/bottom_panel_button_color_clickable"
                     >
 
 
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:weightSum="100"
-                        android:gravity="bottom|center"
-                        android:orientation="vertical"
+                        style="@style/bottomLLPanelButtonStyle"
                         >
                         <!-- Photocamera Icon -->
                         <ImageView
                             android:src="@mipmap/video_camera"
-                            android:layout_width="match_parent"
                             android:id="@+id/video_cam_icon_id"
-                            android:layout_height="0dp"
-                            android:layout_weight="60"
-                            android:clickable="false"
+                            style="@style/bottomBPanelButtonImgViewStyle"
                             />
                         <TextView
                             style="@style/menuTextViewStyle"
                             android:text="@string/video"
+                            />
+                        <TextView
+                            style="@style/menuResTextViewStyle"
+                            android:text=""
+                            android:id="@+id/third_bottom_button_resolution_tv_id"
                             />
                     </LinearLayout>
                     <!-- Speaker (Sound when picture shoot) icon -->

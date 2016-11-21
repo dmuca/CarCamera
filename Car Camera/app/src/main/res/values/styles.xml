@@ -67,30 +67,55 @@
 
 
     <!-- BOTTOM PANEL CAMERA -->
-        <!-- panel LinearLayout button style-->
-    <style name="bottomLLPanelButtonStyle">
+        <!-- panel RelativeLayout button style-->
+    <style name="bottomRLPanelButtonStyle">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_weight">100</item>
         <item name="android:orientation">vertical</item>
         <item name="android:weightSum">100</item>
         <item name="android:padding">4dp</item>
-
+        <item name="android:clickable">true</item>
+        <item name="android:background">@drawable/bottom_panel_button_color_clickable</item>
+        <item name="android:gravity">top|center</item>
+    </style>
+        <!-- panel LinearLayout button style-->
+    <style name="bottomLLPanelButtonStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:weightSum">100</item>
+        <item name="android:gravity">top|center</item>
+        <item name="android:orientation">vertical</item>
     </style>
         <!-- panel ImageView button style-->
-    <style name="bottomBPanelButtonStyle">
-        <item name="android:layout_width">match_parent</item>
+    <style name="bottomBPanelButtonImgViewStyle">
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">0dp</item>
-        <item name="android:layout_weight">70</item>
+        <item name="android:layout_weight">100</item>
+        <item name="android:clickable">false</item>
     </style>
         <!-- panel TextView style-->
     <style name="menuTextViewStyle">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">0dp</item>
-        <item name="android:layout_weight">25</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+        <!-- panel TextView Resolution Information style-->
+    <style name="menuResTextViewStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">8sp</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">#FFFFFF</item>
     </style>
+
+
+
+
+
 
     <!-- Modes List Panel -->
         <!-- Linear Layout Square for IMAGE and TEXT -->
