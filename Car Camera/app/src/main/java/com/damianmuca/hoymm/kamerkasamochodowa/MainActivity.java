@@ -936,7 +936,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                     mMediaRecorder.setVideoSize(cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).width
                             , cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).height);
                 }
-                // Video Size (if CUSTOM videoQualityMode ==3)
+                // Video Size (if CUSTOM videoQualityMode == 2)
                 else {
                     int customVideoResolution = sharedPref.getInt(getResources().getString(R.string.SP_video_custom_resolution),0);
                     mMediaRecorder.setVideoSize(cameraSizesL.get(customVideoResolution).width
@@ -974,7 +974,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                     mMediaRecorder.setVideoSize(cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).width
                             , cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).height);
                 }
-                // Video Size (if CUSTOM videoQualityMode ==3)
+                // Video Size (if CUSTOM videoQualityMode == 2)
                 else {
                     int customVideoResolution = sharedPref.getInt(getResources().getString(R.string.SP_video_custom_resolution),0);
                     mMediaRecorder.setVideoSize(cameraSizesL.get(customVideoResolution).width
@@ -1086,38 +1086,20 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     private boolean CameraIsCurrentlyRecording;
     private Thread myThread = null;
     //SurfaceHolder myHolder;
-    private boolean isThatOk = false, switchBetweenTakingPhtAndVideo = false;
+    private boolean isThatOk = true, switchBetweenTakingPhtAndVideo = false;
     private double lastPictureAtSeconds;
     private double cameraRecordStartedAtSeconds;
     @Override
     public void run() {
 
+        try {
+            Thread.sleep(RUN_TIME_PAUSE);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
         while (isThatOk) {
-            try {
-                Thread.sleep(RUN_TIME_PAUSE);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-
-            /*final String first = ContextCompat.checkSelfPermission
-                    (this, Manifest.permission.WRITE_SETTINGS) == PackageManager.PERMISSION_GRANTED ? "True | " : "False | ";
-            final String sec = Build.VERSION.SDK_INT < Build.VERSION_CODES.M ? "True | " : "False | ";
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    //stuff that updates ui
-                    Toast.makeText(context, first+ sec +
-
-                            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ?
-                                    ((Settings.System.canWrite(context)) ? " True" : " False")
-                            : "API<23")
-
-
-                            ,Toast.LENGTH_LONG).show();
-                }
-            });*/
 
             // Run enable only if all needed permissions are granted
             if (ifAllThreePermissionNeededToRunGranted()) {
@@ -1135,7 +1117,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 // consider THE ORIENTATION
                 demandOrientationSettings();
 
-
+                // switchBetweenTakingPhtAndVideo - you can either make photo or record video in one RUN ROUND
                 if (switchBetweenTakingPhtAndVideo)
                     synchronized (this) {
                         // REFRESH PICTURING
@@ -1744,7 +1726,6 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         if (sharedPref.getBoolean(getResources().getString(R.string.SP_general_brightness_seek_bar), false)){
             Float appBrightness =sharedPref.getFloat(getResources().getString(R.string.SP_general_brightness_seek_bar_intensity), (float)0.5);
             //System.out.println(appBrightness);
-
             Settings.System.putInt(this.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS,
                     Math.round(appBrightness*255)); // brightness 0 to 255
             WindowManager.LayoutParams lp = getWindow().getAttributes();
