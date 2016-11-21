@@ -777,8 +777,6 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         //      - Audio
         boolean recordVideoSound  = sharedPref.getBoolean(getResources().getString(R.string.SP_is_volume_enable), true);
         String videoQualityMode = sharedPref.getString(getResources().getString(R.string.SP_video_quality),"0");
-        for(Camera.Size item : cameraSizesL)
-            System.out.println(item.width + "x" + item.height);
 
         CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
         // HQ
@@ -932,9 +930,19 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 // Frame Rate
                 mMediaRecorder.setVideoFrameRate(frameRateProfile);
 
-                // Video Size
-                mMediaRecorder.setVideoSize(cameraSizesL.get(Integer.valueOf(videoQualityMode)-3).width
-                        , cameraSizesL.get(Integer.valueOf(videoQualityMode)-3).height);
+
+                // Video Size (if NO CUSTOM - some DEV SUPPORTED resolution)
+                if (Integer.valueOf(videoQualityMode) != 2) {
+                    mMediaRecorder.setVideoSize(cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).width
+                            , cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).height);
+                }
+                // Video Size (if CUSTOM videoQualityMode ==3)
+                else {
+                    int customVideoResolution = sharedPref.getInt(getResources().getString(R.string.SP_video_custom_resolution),0);
+                    mMediaRecorder.setVideoSize(cameraSizesL.get(customVideoResolution).width
+                            , cameraSizesL.get(customVideoResolution).height);
+                }
+
 
                 // Video Bitrate
                 mMediaRecorder.setVideoEncodingBitRate(curVideoBitrateProfile);
@@ -960,9 +968,18 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 // Frame Rate
                 mMediaRecorder.setVideoFrameRate(frameRateProfile);
 
-                // Video Size
-                mMediaRecorder.setVideoSize(cameraSizesL.get(Integer.valueOf(videoQualityMode)-3).width
-                        , cameraSizesL.get(Integer.valueOf(videoQualityMode)-3).height);
+
+                // Video Size (if NO CUSTOM - some DEV SUPPORTED resolution)
+                if (Integer.valueOf(videoQualityMode) != 2) {
+                    mMediaRecorder.setVideoSize(cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).width
+                            , cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).height);
+                }
+                // Video Size (if CUSTOM videoQualityMode ==3)
+                else {
+                    int customVideoResolution = sharedPref.getInt(getResources().getString(R.string.SP_video_custom_resolution),0);
+                    mMediaRecorder.setVideoSize(cameraSizesL.get(customVideoResolution).width
+                            , cameraSizesL.get(customVideoResolution).height);
+                }
 
                 // Video Bitrate
                 mMediaRecorder.setVideoEncodingBitRate(curVideoBitrateProfile);
