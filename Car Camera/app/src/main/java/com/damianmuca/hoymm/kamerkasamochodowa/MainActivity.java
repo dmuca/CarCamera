@@ -795,17 +795,24 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         if (Integer.valueOf(videoQualityMode) <= 1) {
             // if video enabled sound
             if (recordVideoSound) {
-                mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+                // AUDIO
+                //mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+                // VIDEO
                 mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.DEFAULT);
                 mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
                 mMediaRecorder.setVideoFrameRate(profile.videoFrameRate);
                 mMediaRecorder.setVideoSize(profile.videoFrameWidth, profile.videoFrameHeight);
                 mMediaRecorder.setVideoEncodingBitRate(profile.videoBitRate);
-                mMediaRecorder.setAudioEncodingBitRate(profile.audioBitRate);
+
+                // AUDIO
+                /*mMediaRecorder.setAudioEncodingBitRate(profile.audioBitRate);
                 mMediaRecorder.setAudioChannels(profile.audioChannels);
-                mMediaRecorder.setAudioSamplingRate(profile.audioSampleRate);
+                mMediaRecorder.setAudioSamplingRate(profile.audioSampleRate); // <-- Reason of app crash
+*/
+                // VIDEO
                 mMediaRecorder.setVideoEncoder(profile.videoCodec);
-                mMediaRecorder.setAudioEncoder(profile.audioCodec);
+                // AUDIO
+                //mMediaRecorder.setAudioEncoder(profile.audioCodec);
 
             }
             // if video disabled sound
@@ -1096,17 +1103,18 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     @Override
     public void run() {
 
-        try {
-            Thread.sleep(RUN_TIME_PAUSE);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
 
         while (isThatOk) {
 
+
+            try {
+                Thread.sleep(RUN_TIME_PAUSE);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             // Run enable only if all needed permissions are granted
-            if (ifAllThreePermissionNeededToRunGranted()) {
+            if (ifAllThreePermissionNeededToRunGranted() && myCameraObj!=null) {
 
 
                 // change screen color (to normal, after photoshot effect brightnnes screen)
