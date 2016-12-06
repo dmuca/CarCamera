@@ -1316,12 +1316,30 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                         || ((System.currentTimeMillis() - cameraRecordStartedAtSeconds) / 1000 >= videoRecordingTimeInSeconds
                         && cameraRecordStartedAtSeconds != 0)) {
                     // stop recording and release camera, TRY prevents CRASH in situation when user immediately STARTS and STOPS recording
-                    try {
+
+
+
+
+
+
+
+
+                    /*try {
                         mMediaRecorder.stop();  // stop the recording
+                        Log.e("mMediaRecorder", " mMediaRecorder.stop() method invoked successfully.");
                     }catch (Exception e){
                         e.printStackTrace();
                         Log.e("mMediaRecorder", "unable to call mMediaRecored.stop() method");
-                    }
+                    }*/
+
+
+
+
+
+
+
+
+
                     releaseMediaRecorder(); // release the MediaRecorder object
                     myCameraObj.lock();         // take camera access back from MediaRecorder
                     CameraIsCurrentlyRecording = false;
