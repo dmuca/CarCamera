@@ -310,7 +310,7 @@
                             style="@style/timeRecordingTextOverCamera"
                             android:text="00:00"
                             android:id="@+id/tv_time_recording"
-                            android:visibility="visible"
+                            android:visibility="invisible"
                             />
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -322,7 +322,7 @@
                             <View
                                 style="@style/REC_circle"
                                 android:id="@+id/red_record_circle"
-                                android:visibility="visible"
+                                android:visibility="invisible"
                                 />
                             <!--     REC'ording RED TEXT -->
                             <TextView
@@ -330,7 +330,7 @@
                                 android:text="@string/REC"
                                 android:textColor="@color/redColor"
                                 android:id="@+id/tv_record"
-                                android:visibility="visible"
+                                android:visibility="invisible"
                                 />
                         </LinearLayout>
                     </LinearLayout>
@@ -355,7 +355,7 @@
                             android:text="00 sec"
                             android:textColor="@color/secondtextOverCameraColor"
                             android:id="@+id/tv_time_to_shot_photo"
-                            android:visibility="visible"
+                            android:visibility="invisible"
                             />
                     </LinearLayout>
 

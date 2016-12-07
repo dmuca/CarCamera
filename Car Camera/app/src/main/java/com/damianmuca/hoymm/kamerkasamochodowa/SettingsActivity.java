@@ -28,8 +28,10 @@ public class SettingsActivity extends PreferenceActivity{
     public void onBuildHeaders(List<Header> target) {
         loadHeadersFromResource(R.xml.headers, target);
         // initializate SUBSETTINGS NAMES array, so later I can use it inside isValidFragment method
-        StaticValues.mySubsettingsClassesNamesArray = new String [target.size()];
-        for (int i = 0; i < target.size(); ++i)
-            StaticValues.mySubsettingsClassesNamesArray[i] = target.get(i).fragment;
+        if (StaticValues.mySubsettingsClassesNamesArray == null) {
+            StaticValues.mySubsettingsClassesNamesArray = new String [target.size()];
+            for (int i = 0; i < target.size(); ++i)
+                StaticValues.mySubsettingsClassesNamesArray[i] = target.get(i).fragment;
+        }
     }
 }

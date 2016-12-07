@@ -6,5 +6,5 @@ package com.damianmuca.hoymm.kamerkasamochodowa;
 
 public class StaticValues {
     public static double bitrateMultiplication = 0.096;
-    static String [] mySubsettingsClassesNamesArray;
+    static String [] mySubsettingsClassesNamesArray = null;
 }
