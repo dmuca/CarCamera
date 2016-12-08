@@ -796,7 +796,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             // if video enabled sound
             if (recordVideoSound) {
                 // AUDIO
-                //mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+                mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
                 // VIDEO
                 mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.DEFAULT);
                 mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
@@ -805,14 +805,14 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 mMediaRecorder.setVideoEncodingBitRate(profile.videoBitRate);
 
                 // AUDIO
-                /*mMediaRecorder.setAudioEncodingBitRate(profile.audioBitRate);
+                mMediaRecorder.setAudioEncodingBitRate(profile.audioBitRate);
                 mMediaRecorder.setAudioChannels(profile.audioChannels);
                 mMediaRecorder.setAudioSamplingRate(profile.audioSampleRate); // <-- Reason of app crash
-*/
+
                 // VIDEO
                 mMediaRecorder.setVideoEncoder(profile.videoCodec);
                 // AUDIO
-                //mMediaRecorder.setAudioEncoder(profile.audioCodec);
+                mMediaRecorder.setAudioEncoder(profile.audioCodec);
 
             }
             // if video disabled sound
@@ -1105,7 +1105,6 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
 
         while (isThatOk) {
-
 
             try {
                 Thread.sleep(RUN_TIME_PAUSE);
