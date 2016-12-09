@@ -76,8 +76,11 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
 
 
+
     private static Camera myCameraObj;
 
+    // current VideoQuality
+    public static String videoQualityMode = "";
     // Photo Capture Sound
     private MediaPlayer photoCaptureSound;
     LinearLayout modeButtonFromChoosingPanel;
@@ -91,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     // VIDEO OBJECTS
     MediaRecorder mMediaRecorder;
     CameraPreview mPreview;
+    FrameLayout camViewPreview;
+
     private int videoRecordingTimeInSeconds;
     private boolean refreshBottomResolutionsTV = false;
 
@@ -108,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
         setContentView(R.layout.activity_main);
         // initializate objects
+        camViewPreview = (FrameLayout) findViewById(R.id.camera_preview);
         dialogForGetPermissionIsCurShowing = false;
         photoCaptureSound = MediaPlayer.create(this, R.raw.photograpy_capture_sound);
         modeButtonFromChoosingPanel = (LinearLayout) findViewById(R.id.choose_mode_panel_id);
@@ -646,9 +652,6 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             myCameraObj = getCameraInstance();
             // case camera is NOT used by ANOTHER PROCESS
             if (myCameraObj != null) {
-                mPreview = new CameraPreview(context, myCameraObj, myCameraObj.getParameters());
-                FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
-                preview.addView(mPreview);
 
 
                 // VIDEO RES BUBBLE SORT
@@ -667,6 +670,16 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                             ++change;
                         }
                 }
+
+                Camera.Parameters l_parameters = myCameraObj.getParameters();
+                l_parameters.setPreviewSize(CamcorderProfile.get( CamcorderProfile.QUALITY_LOW).videoFrameWidth,
+                        CamcorderProfile.get( CamcorderProfile.QUALITY_LOW).videoFrameHeight);
+
+                mPreview = new CameraPreview(context, myCameraObj, l_parameters);
+                camViewPreview.addView(mPreview);
+
+
+
 
 
                 // PHOTO RES BUBBLE SORT
@@ -780,7 +793,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         // Step 2: Set sources
         //      - Audio
         boolean recordVideoSound  = sharedPref.getBoolean(getResources().getString(R.string.SP_is_volume_enable), true);
-        String videoQualityMode = sharedPref.getString(getResources().getString(R.string.SP_video_quality),"0");
+
 
         CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
         // HQ
@@ -949,7 +962,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 }
                 // Video Size (if CUSTOM videoQualityMode == 2)
                 else {
-                    int customVideoResolution = sharedPref.getInt(getResources().getString(R.string.SP_video_custom_resolution),0);
+                    int customVideoResolution =
+                            sharedPref.getInt(getResources().getString(R.string.SP_video_custom_resolution),0);
                     mMediaRecorder.setVideoSize(cameraSizesL.get(customVideoResolution).width
                             , cameraSizesL.get(customVideoResolution).height);
                 }
@@ -1323,6 +1337,9 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
 
 
+
+
+
                     /*try {
                         mMediaRecorder.stop();  // stop the recording
                         Log.e("mMediaRecorder", " mMediaRecorder.stop() method invoked successfully.");
@@ -1503,7 +1520,9 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
     PowerManager.WakeLock wakeLock;
     KeyguardManager.KeyguardLock keyguardLock;
-    SharedPreferences sharedPref;
+    private static SharedPreferences sharedPref;
+
+
     @Override
     protected void onResume() {
         isThatOk = true;
@@ -1511,6 +1530,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
         // get SharedPref
         sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        videoQualityMode = sharedPref.getString(getResources().getString(R.string.SP_video_quality),"0");
 
         context = this;
 
@@ -2074,6 +2094,11 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             // SHOW OR HIDE
             modeButtonFromChoosingPanel.setVisibility(modeButtonToOpenPanel.isActivated() ? View.VISIBLE : View.GONE);
         }
+    }
+
+
+    public static SharedPreferences getSharedPref() {
+        return sharedPref;
     }
 
     public void newModeButtonCliked(View view) {
