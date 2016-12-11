@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                                 }
                             });
 
-                    deleteOldestFile(SP_Data.getHowManyPicturesCanISave(), MEDIA_TYPE_IMAGE);
+                    //deleteOldestFile(SP_Data.getHowManyPicturesCanISave(), MEDIA_TYPE_IMAGE);
 
 
                     runOnUiThread(new Runnable() {
@@ -1134,7 +1134,6 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     @Override
     public void run() {
 
-
         while (isThatOk) {
 
             try {
@@ -1396,6 +1395,18 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                                         disableOrEnableVideoRecordingTimingAndButton();
                                     }
                                 });
+
+                                /* if new obj inside list was created, and the whole process failed, we must
+                                delete it, otherwise if limit of videos are e.g. 5, and 6 inside list
+                                the oldest video will be deleted, and the result is going to be 4 videos inside
+                                gallery and five on our list, (repeat process might cause 0 videos inside gallery,
+                                and 5 on our list)
+                                */
+                                boolean isDeleted = listOfVideoFiles.get(listOfVideoFiles.size()-1).delete();
+                                if (isDeleted)
+                                    listOfVideoFiles.remove(listOfVideoFiles.size() - 1);
+
+
                                 stopCamVideoRecording();
                             }
                         }
@@ -1448,7 +1459,6 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         else if (mediaType == MEDIA_TYPE_VIDEO){
             if (listOfVideoFiles != null) {
                 while (listOfVideoFiles.size() > filesAmountLimit) {
-                    final String name = listOfVideoFiles.get(0).toString();
                     deleted = listOfVideoFiles.get(0).delete();
                     listOfVideoFiles.remove(0);
 
