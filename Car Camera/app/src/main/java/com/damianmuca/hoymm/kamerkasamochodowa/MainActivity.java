@@ -57,7 +57,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements Runnable {
 
-    private AlertDialog noBackCameraOrInUse_AD, needSystemPermissionAD;
+    private AlertDialog noBackCameraOrInUse_AD, needSystemPermissionAD, wrongEncoderOrResolution_AD;
 
     static private List <Camera.Size> cameraSizesL, photoSizesL;
     ArrayList<File> listOfVideoFiles = null, listOfPictureFiles = null;
@@ -148,6 +148,18 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                         finish();
                     }
                 })).create();
+
+        // initializate aletr when choosen settings for encoder or resolution are wrong
+        wrongEncoderOrResolution_AD = (builder.setMessage(R.string.modify_encoder_or_bitrate)
+                .setTitle("Custom Resolution Settings Error")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })).create();
+        wrongEncoderOrResolution_AD
+                .setIcon(android.R.drawable.stat_sys_warning);
 
 
         // need system permission to modify system settings ALERT DIALOG
@@ -749,31 +761,36 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     public void videoMakingButtonClicked(View view) {
         // if NO CAMERA PERMISSION GRANTED
         if (ifAllThreePermissionNeededToRunGranted()){
-            // --- TAKE CARE OF VISUAL EFFECTS ---
-            makingVideoActivated = !makingVideoActivated;
-            RelativeLayout videoMakingButton = (RelativeLayout) findViewById(R.id.videocamera_button_bg_id);
-            // make REC red circle and text, visible/invisible
-            // red circle shape
-            View vRedCircle = findViewById(R.id.red_record_circle);
-            vRedCircle.setVisibility(makingVideoActivated ? View.VISIBLE : View.INVISIBLE);
-            // red text
-            TextView tvRecText = (TextView) findViewById(R.id.tv_record);
-            tvRecText.setVisibility(makingVideoActivated ? View.VISIBLE : View.INVISIBLE);
+            disableOrEnableVideoRecordingTimingAndButton();
 
-            // HIDE record TIME ON SCREEN (TextView)
-            if (!makingVideoActivated) {
-                showTimeRecording(false, 0);
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            }
-            else
-                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-            videoMakingButton.setActivated(makingVideoActivated);
-            takingPictureRefresh();
         }
         // permission GRANTED program can make video
         else
             getThreePermisions();
+    }
+
+    private void disableOrEnableVideoRecordingTimingAndButton() {
+        // --- TAKE CARE OF VISUAL EFFECTS ---
+        makingVideoActivated = !makingVideoActivated;
+        RelativeLayout videoMakingButton = (RelativeLayout) findViewById(R.id.videocamera_button_bg_id);
+        // make REC red circle and text, visible/invisible
+        // red circle shape
+        View vRedCircle = findViewById(R.id.red_record_circle);
+        vRedCircle.setVisibility(makingVideoActivated ? View.VISIBLE : View.INVISIBLE);
+        // red text
+        TextView tvRecText = (TextView) findViewById(R.id.tv_record);
+        tvRecText.setVisibility(makingVideoActivated ? View.VISIBLE : View.INVISIBLE);
+
+        // HIDE record TIME ON SCREEN (TextView)
+        if (!makingVideoActivated) {
+            showTimeRecording(false, 0);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+        else
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        videoMakingButton.setActivated(makingVideoActivated);
+        takingPictureRefresh();
     }
 
     private boolean prepareVideoRecorder(){
@@ -1353,15 +1370,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
 
 
+                    stopCamVideoRecording();
 
-
-
-                    releaseMediaRecorder(); // release the MediaRecorder object
-                    myCameraObj.lock();         // take camera access back from MediaRecorder
-                    CameraIsCurrentlyRecording = false;
-
-                    // reset camera time recording to 0
-                    cameraRecordStartedAtSeconds = 0;
                 }
                 // else... START RECORDING
                 else if (cameraRecordStartedAtSeconds == 0) {
@@ -1373,8 +1383,27 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                         // Camera is available and unlocked, MediaRecorder is prepared,
                         // now you can start recording
 
+                        // if video quality mode is custom, and app crashes, tell user to change settings
+                        if (videoQualityMode.equals("2")) {
+                            try {
+                                mMediaRecorder.start();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        wrongEncoderOrResolution_AD.show();
+                                        disableOrEnableVideoRecordingTimingAndButton();
+                                    }
+                                });
+                                stopCamVideoRecording();
+                            }
+                        }
+                        // if there is some default APPLICATION VIDEO QUALITY
+                        // , then do not catch exception app to tell programmer that smth is wrong
+                        else
+                            mMediaRecorder.start();
 
-                        mMediaRecorder.start();
                         // save camera start recording time
                         cameraRecordStartedAtSeconds = System.currentTimeMillis();
 
@@ -1389,6 +1418,15 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 }
             }
         }
+    }
+
+    private void stopCamVideoRecording() {
+        releaseMediaRecorder(); // release the MediaRecorder object
+        myCameraObj.lock();         // take camera access back from MediaRecorder
+        CameraIsCurrentlyRecording = false;
+
+        // reset camera time recording to 0
+        cameraRecordStartedAtSeconds = 0;
     }
 
     private boolean deleteOldestFile(int filesAmountLimit, int mediaType) {

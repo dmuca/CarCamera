@@ -563,4 +563,5 @@
     <string name="memory_error">Memory Error</string>
     <string name="allow_app_to_change_system_settings">Please, allow the application to modify system settings, so I can change app brightness independently from the system.</string>
     <string name="app_needs_perm_to_wrk_properly">Application needs some permission to work properly.</string>
+    <string name="modify_encoder_or_bitrate">Sorry, video cannot be recorded. Please try modify encoder or resolution, or other settings when using custom resolution.</string>
 </resources>
