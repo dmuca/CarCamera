@@ -28,12 +28,21 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/secondtextOverCameraColor</item>
+
+        <item name="android:shadowColor">@color/shadowTextViewColor</item>
+        <item name="android:shadowRadius">1</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
     </style>
     <!-- Second Text (orange) -->
     <style name="orangeTextOverCamera" >
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/textOverCameraColor</item>
+        <item name="android:shadowColor">@color/shadowTextViewColor</item>
+        <item name="android:shadowRadius">1</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
     </style>
     <!-- Time Recording Text (red) -->
     <style name="timeRecordingTextOverCamera" >
@@ -43,6 +52,10 @@
         <item name="android:textColor">@color/redColor</item>
         <item name="android:layout_marginBottom">-4dp</item>
         <item name="android:gravity">center|bottom</item>
+        <item name="android:shadowColor">@color/shadowTextViewColor</item>
+        <item name="android:shadowRadius">1</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
     </style>
     <!-- "REC" Text (red) -->
     <style name="REC_TextOverCamera" >
@@ -52,6 +65,10 @@
         <item name="android:textColor">@color/redColor</item>
         <item name="android:textStyle">bold</item>
         <item name="android:gravity">center|bottom</item>
+        <item name="android:shadowColor">@color/shadowTextViewColor</item>
+        <item name="android:shadowRadius">1</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
     </style>
     <!-- "REC" CIRCLE (red) -->
     <style name="REC_circle" >

@@ -216,9 +216,14 @@
                         <TextView
                             style="@style/whiteTextOverCamera"
                             android:text="60 "
-                            android:gravity="bottom|left"
+                            android:gravity="bottom|start"
                             android:id="@+id/kilometers_text_view_id"
                             android:textSize="22sp"
+
+                            android:shadowColor="@color/shadowTextViewColor"
+                            android:shadowDx="2"
+                            android:shadowDy="2"
+                            android:shadowRadius="1"
                             />
                         <TextView
                             style="@style/orangeTextOverCamera"
@@ -357,9 +362,12 @@
                             android:textColor="@color/secondtextOverCameraColor"
                             android:id="@+id/tv_time_to_shot_photo"
                             android:visibility="invisible"
+                            android:shadowColor="@color/shadowTextViewColor"
+                            android:shadowDy="2"
+                            android:shadowDx="2"
+                            android:shadowRadius="1"
                             />
                     </LinearLayout>
-
                 </LinearLayout>
 
             </LinearLayout>
