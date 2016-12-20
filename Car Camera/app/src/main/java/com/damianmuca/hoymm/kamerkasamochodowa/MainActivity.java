@@ -1135,7 +1135,6 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     public void run() {
 
         while (isThatOk) {
-
             try {
                 Thread.sleep(RUN_TIME_PAUSE);
             } catch (InterruptedException e) {
@@ -1169,6 +1168,9 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                     synchronized (this) {
                         // REFRESH PICTURING
                         takingPictureRefresh();
+
+                        // refresh camera preview or screen will freeze
+                        mPreview.previewCamera();
                     }
                 else
                     synchronized (this) {
@@ -1271,6 +1273,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     private void takingPictureRefresh() {
         synchronized (this) {
             if (makingPicturesActivated) {
+                myCameraObj.startPreview();
                 try {
                     // show TIME over screen that left to TAKE ANOTHER PHOTO SHOT
                     lastPictureAtSeconds = lastPictureAtSeconds == 0 ? System.currentTimeMillis() : lastPictureAtSeconds;
