@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera;
+import android.location.Location;
 import android.media.CamcorderProfile;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -24,6 +25,7 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -43,6 +45,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderApi;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -55,11 +65,18 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements Runnable {
-
+public class MainActivity extends AppCompatActivity implements Runnable, GoogleApiClient.ConnectionCallbacks
+        , GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private AlertDialog noBackCameraOrInUse_AD, needSystemPermissionAD, wrongEncoderOrResolution_AD;
 
-    static private List <Camera.Size> cameraSizesL, photoSizesL;
+    // GPS Objects
+    private TextView latitudeTV, longtitudeTV, speedTV;
+    private LinearLayout speedSectorVisibilityLL, coordsSectorVisibilityLL;
+    private GoogleApiClient googleApiClient;
+    private LocationRequest locationRequest;
+    private FusedLocationProviderApi locationProvider = LocationServices.FusedLocationApi;
+
+    static private List<Camera.Size> cameraSizesL, photoSizesL;
     ArrayList<File> listOfVideoFiles = null, listOfPictureFiles = null;
     // RUN PAUSE TIME
     private static final int RUN_TIME_PAUSE = 340;
@@ -69,12 +86,12 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     static final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 3;
     private final int MY_PERMISSIONS_REQUEST_WRITE_SETTINGS = 4;
     private final int MY_MULTIPLE_PERMISSIONS_REQUEST = 6;
+    private final int MY_PERMISSION_ACCESS_FINE_LOCATION_REQUEST = 7;
+    private final int MY_PERMISSION_ACCESS_COARSE_LOCATION_REQUEST = 8;
 
     private LinearLayout llMain;
     private Camera.PictureCallback mPicture;    // picture making way
     public static Context context; // Camera SurfaceView object of class
-
-
 
 
     private static Camera myCameraObj;
@@ -85,11 +102,11 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     private MediaPlayer photoCaptureSound;
     LinearLayout modeButtonFromChoosingPanel;
     LinearLayout modeButtonToOpenPanel;
-    ImageView modeButtonToOpenPanelIcon;
+    ImageView modeButtonToOpenPanelIcon, gpsIcon_IV;
     private TextView modeButtonToOpenPanelTV, phtCamResolutionTV, videoCamResolutionTV;
 
     // modes list of choosing MODE PANEL
-    LinearLayout [] modesListPanel = new LinearLayout[8];
+    LinearLayout[] modesListPanel = new LinearLayout[8];
 
     // VIDEO OBJECTS
     MediaRecorder mMediaRecorder;
@@ -105,14 +122,34 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         context = this;
 
 
-
         // in order to make Options Menu transparent on API >= 21, we must make STATUS BAR transparent
         //setStatusBarTranslucent(android.os.Build.VERSION.SDK_INT >= 21);
 
 
-
         setContentView(R.layout.activity_main);
         // initializate objects
+
+        //... GPS
+        // googleApiClient maintain and e.g. CHECKS if device can use google API service
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        locationRequest = new LocationRequest();
+        locationRequest.setInterval(3 * 1000);  // in miliseconds
+        locationRequest.setFastestInterval(1000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+
+        gpsIcon_IV = (ImageView) findViewById(R.id.gps_icon_id);
+        speedTV = (TextView) findViewById(R.id.speed_text_view_id);
+        longtitudeTV = (TextView) findViewById(R.id.longtitude_text_view_id);
+        latitudeTV = (TextView) findViewById(R.id.latitude_text_view_id);
+        speedSectorVisibilityLL = (LinearLayout) findViewById(R.id.speed_sector_visibility_ll_id);
+        coordsSectorVisibilityLL = (LinearLayout) findViewById(R.id.coords_sector_visibility_ll_id);
+
+        //...
         camViewPreview = (FrameLayout) findViewById(R.id.camera_preview);
         dialogForGetPermissionIsCurShowing = false;
         photoCaptureSound = MediaPlayer.create(this, R.raw.photograpy_capture_sound);
@@ -142,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         noBackCameraOrInUse_AD = (builder.setMessage(R.string.no_back_camera_in_device)
                 .setCancelable(false)
                 .setIcon(android.R.drawable.stat_notify_error)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener(){
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         finish();
@@ -153,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         wrongEncoderOrResolution_AD = (builder.setMessage(R.string.modify_encoder_or_bitrate)
                 .setTitle("Custom Resolution Settings Error")
                 .setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener(){
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                     }
@@ -169,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Intent grantIntent = new   Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+                                Intent grantIntent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
                                 startActivity(grantIntent);
                             }
                         })
@@ -183,44 +220,43 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                         .create();
 
 
-
         llMain = (LinearLayout) findViewById(R.id.llMain);
         makingPicturesActivated = false;
     }
+
     int photoFrequency;
+
     private void readSharedPrefData() {
         // demand whether use DISABLED or ENABLED microphone ICON
         ImageView iv_micro = (ImageView) findViewById(R.id.iv_micro);
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED)
             iv_micro.setImageResource(R.mipmap.microphone_disabled);
         else {
-            iv_micro.setImageResource(sharedPref.getBoolean(getResources().getString(R.string.SP_is_volume_enable), false)
+            iv_micro.setImageResource(sharedPref.getBoolean(getResources()
+                    .getString(R.string.SP_is_volume_enable), false)
                     ? R.mipmap.microphone_active : R.mipmap.microphone_disabled);
 
         }
         // demand whether photography capture sound is ENABLE or DISABLE
         ImageView iv_photoCaptureSound = (ImageView) findViewById(R.id.iv_speaker);
-        iv_photoCaptureSound.setImageResource(SP_Data.getIfPhotoCaptureSoundEnabled() ? R.mipmap.speaker_enabled : R.mipmap.speaker_disabled);
+        iv_photoCaptureSound.setImageResource(SP_Data.getIfPhotoCaptureSoundEnabled()
+                ? R.mipmap.speaker_enabled : R.mipmap.speaker_disabled);
 
-        String frequencyData = (sharedPref.getString(getResources().getString(R.string.SP_photo_snapshot_frequency),"30"));
+        String frequencyData = (sharedPref.getString(getResources()
+                .getString(R.string.SP_photo_snapshot_frequency), "30"));
         if (isNumeric(frequencyData))
             photoFrequency = Integer.parseInt(frequencyData);
         else
             photoFrequency = 30;
 
 
-
-
     }
 
-    public static boolean isNumeric(String str)
-    {
-        try
-        {
+    public static boolean isNumeric(String str) {
+        try {
             int d = Integer.parseInt(str);
-        }
-        catch(NumberFormatException nfe)
-        {
+        } catch (NumberFormatException nfe) {
             return false;
         }
         return true;
@@ -234,19 +270,20 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             public void onPictureTaken(byte[] data, Camera camera) {
 
                 final File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
-                if (pictureFile==null){
+                if (pictureFile == null) {
                     Log.d(TAG, "Error creating media file, check storage permissions");
                     return;
                 }
                 try {
 
                     // convert byte array into bitmap
-                    Bitmap loadedImage = BitmapFactory.decodeByteArray(data, 0,data.length);
+                    Bitmap loadedImage = BitmapFactory.decodeByteArray(data, 0, data.length);
 
                     // rotate Image
                     Matrix rotateMatrix = new Matrix();
                     rotateMatrix.postRotate(getDeviceRotation());
-                    loadedImage = Bitmap.createBitmap(loadedImage, 0, 0,loadedImage.getWidth(), loadedImage.getHeight(),rotateMatrix, false);
+                    loadedImage = Bitmap.createBitmap(loadedImage, 0, 0, loadedImage.getWidth()
+                            , loadedImage.getHeight(), rotateMatrix, false);
 
 
                     ByteArrayOutputStream ostream = new ByteArrayOutputStream();
@@ -260,10 +297,11 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
                     //tell System that new file was created, so It'll APPEAR INSTANTLY IN GALLERY
                     // scans ALL FILES (Huge Process)
-                    //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+                    //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,
+                    // Uri.parse("file://" + Environment.getExternalStorageDirectory())));
                     // scan for SINGLE FILE
                     MediaScannerConnection.scanFile(context,
-                            new String[] { pictureFile.toString() }, null,
+                            new String[]{pictureFile.toString()}, null,
                             new MediaScannerConnection.OnScanCompletedListener() {
                                 public void onScanCompleted(String path, Uri uri) {
                                     Log.i("ExternalStorage", "Scanned " + path + ":");
@@ -277,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (listOfPictureFiles==null)
+                            if (listOfPictureFiles == null)
                                 listOfPictureFiles = new ArrayList<>();
                             listOfPictureFiles.add(pictureFile);
                             deleteOldestFile(SP_Data.getHowManyPicturesCanISave(), MEDIA_TYPE_IMAGE);
@@ -414,7 +452,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 // sees the explanation, try again to request the permission.
 
                 // Camera Permission Explanation
-                Toast.makeText(this, R.string.camera_permisssion_explanation, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.camera_permisssion_explanation, Toast.LENGTH_LONG)
+                        .show();
 
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.CAMERA},
@@ -433,10 +472,10 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 // result of the request.
             }
             return false;
-        }
-        else
+        } else
             return true;
     }
+
     // get WRITE EXTERNAL STORAGE PERMISSION
     private boolean getPermissionsWriteExternalStorage() {
         // Here, thisActivity is the current activity -- WRITE_EXTERNAL_STORAGE PERMISSION
@@ -447,7 +486,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
 
                 // Camera Permission Explanation
-                Toast.makeText(this, R.string.write_ext_storage_permission_explanation, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.write_ext_storage_permission_explanation, Toast.LENGTH_LONG)
+                        .show();
 
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
@@ -466,20 +506,22 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 // result of the request.
             }
             return false;
-        }
-        else
+        } else
             return true;
     }
+
     // get RECORD AUDIO PERMISSION
     private boolean getPermissionsRecordAudio() {
-        if (ContextCompat.checkSelfPermission(this,  Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                == PackageManager.PERMISSION_GRANTED)
             return true;
 
         // Here, thisActivity is the current activity -- RECORD AUDIO PERMISSION
-            // Should we show an explanation?
+        // Should we show an explanation?
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)) {
             // Camera Permission Explanation
-            Toast.makeText(this, R.string.rec_audio_permission_explanation, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.rec_audio_permission_explanation, Toast.LENGTH_LONG)
+                    .show();
 
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}
                     , MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
@@ -500,6 +542,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         }
         return false;
     }
+
     // check permission wo WRITE_SETTINGS
     private boolean getPermissionToWriteSettings() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -518,7 +561,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                         // sees the explanation, try again to request the permission.
 
                         // WRITE_SETTINGS permission Explanation
-                        Toast.makeText(this, R.string.write_settings_permission_explanation, Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, R.string.write_settings_permission_explanation, Toast.LENGTH_LONG)
+                                .show();
 
                         ActivityCompat.requestPermissions(this,
                                 new String[]{Manifest.permission.WRITE_SETTINGS},
@@ -537,11 +581,9 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                         // result of the request.
                     }
                     return false;
-                }
-                else
+                } else
                     return true;
-            }
-            else {
+            } else {
                 return true;
             }
         }
@@ -552,7 +594,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult
+            (int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             // ### ### ### CAMERA PERMISSIONS
             case MY_PERMISSIONS_REQUEST_CAMERA: {
@@ -604,7 +647,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 else {
                     // save to SharedPref that microphone is DISABLED
                     SharedPreferences.Editor editor = sharedPref.edit();
-                    editor.putBoolean(getResources().getString(R.string.SP_is_volume_enable),false);
+                    editor.putBoolean(getResources().getString(R.string.SP_is_volume_enable), false);
                     editor.apply();
                     // change micro icon to DISABLE;
                     ImageView iv_micro = (ImageView) findViewById(R.id.iv_micro);
@@ -645,6 +688,35 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                     // functionality that depends on this permission.
                 }
             }
+
+            // ### ### ### ACCESS FINE LOCATION
+            case MY_PERMISSION_ACCESS_FINE_LOCATION_REQUEST: {
+                // Permission GRANTED
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                }
+                // PERMISSION NOT GRANTED
+                else {
+                    // Record Audio Permission Explanation
+                    Toast.makeText(this, R.string.access_fine_location_not_granted, Toast.LENGTH_LONG).show();
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+            }
+            // ### ### ### ACCESS COARSE LOCATION
+            case MY_PERMISSION_ACCESS_COARSE_LOCATION_REQUEST: {
+                // Permission GRANTED
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    initializateMostImportantObjectForAppWorking();
+                }
+                // PERMISSION NOT GRANTED
+                else {
+                    // Record Audio Permission Explanation
+                    Toast.makeText
+                            (this, R.string.access_coarse_location_permission_not_granted, Toast.LENGTH_LONG).show();
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+            }
         }
 
         // other 'case' lines to check for other
@@ -676,22 +748,19 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                     cameraSizesL = myCameraObj.getParameters().getSupportedPreviewSizes();
                 while (change > 0) {
                     change = 0;
-                    for (int i = 0; i < cameraSizesL.size()-1; ++i)
-                        if (cameraSizesL.get(i).width < cameraSizesL.get(i+1).width) {
+                    for (int i = 0; i < cameraSizesL.size() - 1; ++i)
+                        if (cameraSizesL.get(i).width < cameraSizesL.get(i + 1).width) {
                             Collections.swap(cameraSizesL, i, i + 1);
                             ++change;
                         }
                 }
 
                 Camera.Parameters l_parameters = myCameraObj.getParameters();
-                l_parameters.setPreviewSize(CamcorderProfile.get( CamcorderProfile.QUALITY_LOW).videoFrameWidth,
-                        CamcorderProfile.get( CamcorderProfile.QUALITY_LOW).videoFrameHeight);
+                l_parameters.setPreviewSize(CamcorderProfile.get(CamcorderProfile.QUALITY_LOW).videoFrameWidth,
+                        CamcorderProfile.get(CamcorderProfile.QUALITY_LOW).videoFrameHeight);
 
                 mPreview = new CameraPreview(context, myCameraObj, l_parameters);
                 camViewPreview.addView(mPreview);
-
-
-
 
 
                 // PHOTO RES BUBBLE SORT
@@ -712,7 +781,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 noBackCameraOrInUse_AD.show();
         }
         // when unable to get CAMERA OBJECT (probably in use by another app)
-        catch (Exception e){
+        catch (Exception e) {
             // display error
             AlertDialog alertDialog = new AlertDialog.Builder(this)
                     .setTitle(R.string.camera_error)
@@ -731,11 +800,12 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
     // PICTURE MAKING BUTTON
     boolean makingPicturesActivated, makingVideoActivated;
+
     public void pictureMakingButtonClicked(View view) {
         // if NO CAMERA PERMISSION GRANTED
         if (!ifAllThreePermissionNeededToRunGranted())
             getThreePermisions();
-        // permission GRANTED program can make pictures
+            // permission GRANTED program can make pictures
         else {
 
             makingPicturesActivated = !makingPicturesActivated;
@@ -750,17 +820,17 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             if (!makingPicturesActivated) {
                 showTimeCounterToNextPhoto(false, 0);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            }
-            else
+            } else
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             takingPictureRefresh();
         }
         lastPictureAtSeconds = 0;
     }
+
     // VIDEO MAKING BUTTON
     public void videoMakingButtonClicked(View view) {
         // if NO CAMERA PERMISSION GRANTED
-        if (ifAllThreePermissionNeededToRunGranted()){
+        if (ifAllThreePermissionNeededToRunGranted()) {
             disableOrEnableVideoRecordingTimingAndButton();
 
         }
@@ -785,18 +855,16 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         if (!makingVideoActivated) {
             showTimeRecording(false, 0);
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        }
-        else
+        } else
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         videoMakingButton.setActivated(makingVideoActivated);
         takingPictureRefresh();
     }
 
-    private boolean prepareVideoRecorder(){
+    private boolean prepareVideoRecorder() {
         String TAG = "VIDEO RECORD BUTTON: ";
         mMediaRecorder = new MediaRecorder();
-
 
 
         // Step Hoymm 0: Adjust for orientation
@@ -809,16 +877,16 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
         // Step 2: Set sources
         //      - Audio
-        boolean recordVideoSound  = sharedPref.getBoolean(getResources().getString(R.string.SP_is_volume_enable), true);
+        boolean recordVideoSound = sharedPref.getBoolean(getResources().getString(R.string.SP_is_volume_enable), true);
 
 
         CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
         // HQ
-        if ( Integer.valueOf(videoQualityMode) == 0){
+        if (Integer.valueOf(videoQualityMode) == 0) {
             profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
         }
         // LQ
-        else if (Integer.valueOf(videoQualityMode) == 1){
+        else if (Integer.valueOf(videoQualityMode) == 1) {
             profile = CamcorderProfile.get(CamcorderProfile.QUALITY_LOW);
         }
         // HQ, LQ
@@ -858,7 +926,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             }
         }
         // Resolution or Custom Video Mode
-        else{
+        else {
             String videoFileFormatIndex, frameRateIndex, bitrateIndex, videoEncoderIndex;
             // some RESOLUTION (not-custom)
             if (Integer.valueOf(videoQualityMode) != 2) {
@@ -869,7 +937,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 videoEncoderIndex = sharedPref.getString(getResources().getString(R.string.SP_video_encoder), "0");
             }
             // CUSTOM mode
-            else{
+            else {
                 videoFileFormatIndex =
                         String.valueOf(sharedPref.getInt(getResources().getString(R.string.SP_video_custom_file_format), 0));
                 frameRateIndex =
@@ -945,12 +1013,12 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 curVideoBitrateProfile = (int) (curVideoBitrateProfile * bitrateMultiply[Integer.valueOf(bitrateIndex)]);
             }
             // HQ res
-            else if (Integer.valueOf(videoQualityMode) == 0){
-                curVideoBitrateProfile = CamcorderProfile.get( CamcorderProfile.QUALITY_HIGH).videoBitRate;
+            else if (Integer.valueOf(videoQualityMode) == 0) {
+                curVideoBitrateProfile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH).videoBitRate;
             }
             // LQ res
             else {
-                curVideoBitrateProfile = CamcorderProfile.get( CamcorderProfile.QUALITY_HIGH).videoBitRate;
+                curVideoBitrateProfile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH).videoBitRate;
             }
 
 
@@ -968,8 +1036,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                     mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
                 else
 
-                // Frame Rate
-                mMediaRecorder.setVideoFrameRate(frameRateProfile);
+                    // Frame Rate
+                    mMediaRecorder.setVideoFrameRate(frameRateProfile);
 
 
                 // Video Size (if NO CUSTOM - some DEV SUPPORTED resolution)
@@ -980,7 +1048,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 // Video Size (if CUSTOM videoQualityMode == 2)
                 else {
                     int customVideoResolution =
-                            sharedPref.getInt(getResources().getString(R.string.SP_video_custom_resolution),0);
+                            sharedPref.getInt(getResources().getString(R.string.SP_video_custom_resolution), 0);
                     mMediaRecorder.setVideoSize(cameraSizesL.get(customVideoResolution).width
                             , cameraSizesL.get(customVideoResolution).height);
                 }
@@ -1018,7 +1086,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 }
                 // Video Size (if CUSTOM videoQualityMode == 2)
                 else {
-                    int customVideoResolution = sharedPref.getInt(getResources().getString(R.string.SP_video_custom_resolution),0);
+                    int customVideoResolution = sharedPref.getInt(getResources()
+                            .getString(R.string.SP_video_custom_resolution), 0);
                     mMediaRecorder.setVideoSize(cameraSizesL.get(customVideoResolution).width
                             , cameraSizesL.get(customVideoResolution).height);
                 }
@@ -1033,7 +1102,6 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         }
 
 
-
         // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
         //mMediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
 
@@ -1045,10 +1113,11 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
         //tell System that new file was created, so It'll APPEAR INSTANTLY IN GALLERY
         // scans ALL FILES (Huge Process)
-        //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+        //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"
+        // + Environment.getExternalStorageDirectory())));
         // scan for SINGLE FILE
         MediaScannerConnection.scanFile(context,
-                new String[] { tempVideoFile.toString() }, null,
+                new String[]{tempVideoFile.toString()}, null,
                 new MediaScannerConnection.OnScanCompletedListener() {
                     public void onScanCompleted(String path, Uri uri) {
                         Log.i("ExternalStorage", "Scanned " + path + ":");
@@ -1057,17 +1126,16 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 });
 
 
-
         // Step 5: Set the preview output
         mMediaRecorder.setPreviewDisplay(mPreview.getHolder().getSurface());
 
 
         // Step 6: Prepare configured MediaRecorder
         try {
-            mMediaRecorder.prepare( );
+            mMediaRecorder.prepare();
             // add VIDEO TO OUR LIST
             listOfVideoFiles.add(tempVideoFile);
-            deleteOldestFile(SP_Data.getHowManyMoviesCanISave(),MEDIA_TYPE_VIDEO);
+            deleteOldestFile(SP_Data.getHowManyMoviesCanISave(), MEDIA_TYPE_VIDEO);
         } catch (IllegalStateException e) {
             Log.d(TAG, "IllegalStateException preparing MediaRecorder: " + e.getMessage());
             releaseMediaRecorder();
@@ -1085,12 +1153,11 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     public void photoSoundButtonClicked(View view) {
         ImageView photoSoundButton = (ImageView) view;
         // demand whether mic is currently disable or enabled, THEN change ICON and SHARED PREF data
-        if (SP_Data.getIfPhotoCaptureSoundEnabled()){
+        if (SP_Data.getIfPhotoCaptureSoundEnabled()) {
             Toast.makeText(this, R.string.photo_sound_disabled, Toast.LENGTH_SHORT).show();
             photoSoundButton.setImageResource(R.mipmap.speaker_disabled);
             SP_Data.setPhotoCaptureSound(false);
-        }
-        else {
+        } else {
             Toast.makeText(this, R.string.photo_sound_enabled, Toast.LENGTH_SHORT).show();
             photoSoundButton.setImageResource(R.mipmap.speaker_enabled);
             SP_Data.setPhotoCaptureSound(true);
@@ -1101,12 +1168,12 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     public void microphoneButtonClicked(View view) {
         ImageView microphoneButton = (ImageView) view;
         // demand whether mic is currently disable or enabled, THEN change ICON and SHARED PREF data
-        if (sharedPref.getBoolean(getResources().getString(R.string.SP_is_volume_enable), false)){
+        if (sharedPref.getBoolean(getResources().getString(R.string.SP_is_volume_enable), false)) {
             Toast.makeText(this, R.string.microphone_disabled, Toast.LENGTH_SHORT).show();
             microphoneButton.setImageResource(R.mipmap.microphone_disabled);
             // save SharedPref
             SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putBoolean(getResources().getString(R.string.SP_is_volume_enable),false);
+            editor.putBoolean(getResources().getString(R.string.SP_is_volume_enable), false);
             editor.apply();
         }
         // if we want to ENABLE Microphone, we must first check if we have permission to use it
@@ -1118,7 +1185,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 microphoneButton.setImageResource(R.mipmap.microphone_active);
                 // save SharedPref
                 SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putBoolean(getResources().getString(R.string.SP_is_volume_enable),true);
+                editor.putBoolean(getResources().getString(R.string.SP_is_volume_enable), true);
                 editor.apply();
             }
         }
@@ -1131,6 +1198,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     private boolean isThatOk = true, switchBetweenTakingPhtAndVideo = false;
     private double lastPictureAtSeconds;
     private double cameraRecordStartedAtSeconds;
+
     @Override
     public void run() {
 
@@ -1142,7 +1210,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             }
 
             // Run enable only if all needed permissions are granted
-            if (ifAllThreePermissionNeededToRunGranted() && myCameraObj!=null) {
+            if (ifAllThreePermissionNeededToRunGranted() && myCameraObj != null) {
 
 
                 // change screen color (to normal, after photoshot effect brightnnes screen)
@@ -1193,39 +1261,39 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
         // Photo Camera Resolution
         String indexOfResolutionPhtCam = sharedPref.getString(getResources().
-                getString(R.string.SP_photo_resolution),"0");
-        phtCamResolutionTV.setText("("+photoSizesL.get(Integer.valueOf(indexOfResolutionPhtCam)).width + "x"
+                getString(R.string.SP_photo_resolution), "0");
+        phtCamResolutionTV.setText("(" + photoSizesL.get(Integer.valueOf(indexOfResolutionPhtCam)).width + "x"
                 + photoSizesL.get(Integer.valueOf(indexOfResolutionPhtCam)).height + ")");
 
 
         // Video Camera Resolution
         String indexOfQualityVideoCam = sharedPref.getString(getResources().
-                getString(R.string.SP_video_quality),"0");
+                getString(R.string.SP_video_quality), "0");
 
         // HQ
-        if (Integer.valueOf(indexOfQualityVideoCam) == 0){
-            videoCamResolutionTV.setText("("+cameraSizesL.get(0).width + "x"
+        if (Integer.valueOf(indexOfQualityVideoCam) == 0) {
+            videoCamResolutionTV.setText("(" + cameraSizesL.get(0).width + "x"
                     + cameraSizesL.get(0).height + ")");
         }
         // LQ
-        else if (Integer.valueOf(indexOfQualityVideoCam) == 1){
-            videoCamResolutionTV.setText("("+cameraSizesL.get(cameraSizesL.size()-1).width + "x"
-                    + cameraSizesL.get(cameraSizesL.size()-1).height + ")");
+        else if (Integer.valueOf(indexOfQualityVideoCam) == 1) {
+            videoCamResolutionTV.setText("(" + cameraSizesL.get(cameraSizesL.size() - 1).width + "x"
+                    + cameraSizesL.get(cameraSizesL.size() - 1).height + ")");
         }
         // CUSTOM
-        else if (Integer.valueOf(indexOfQualityVideoCam) == 2){
+        else if (Integer.valueOf(indexOfQualityVideoCam) == 2) {
             String customResolutionVideoCamera =
-                    sharedPref.getString(getResources().getString(R.string.SP_video_resolution),"0");
-            videoCamResolutionTV.setText("("+cameraSizesL.get(Integer.valueOf(customResolutionVideoCamera)).width + "x"
+                    sharedPref.getString(getResources().getString(R.string.SP_video_resolution), "0");
+            videoCamResolutionTV.setText("(" + cameraSizesL
+                    .get(Integer.valueOf(customResolutionVideoCamera)).width + "x"
                     + cameraSizesL.get(Integer.valueOf(customResolutionVideoCamera)).height + ")");
-        }
-        else{
+        } else {
             String supportedDeviceResolutionVideoCamera =
-                    sharedPref.getString(getResources().getString(R.string.SP_video_quality),"0");
-            videoCamResolutionTV.setText("("+cameraSizesL.get(Integer.valueOf(supportedDeviceResolutionVideoCamera)-3).width + "x"
-                    + cameraSizesL.get(Integer.valueOf(supportedDeviceResolutionVideoCamera)-3).height + ")");
+                    sharedPref.getString(getResources().getString(R.string.SP_video_quality), "0");
+            videoCamResolutionTV.setText("(" + cameraSizesL
+                    .get(Integer.valueOf(supportedDeviceResolutionVideoCamera) - 3).width + "x"
+                    + cameraSizesL.get(Integer.valueOf(supportedDeviceResolutionVideoCamera) - 3).height + ")");
         }
-
 
 
     }
@@ -1238,8 +1306,6 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         int third = -1;
         if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
             third = Settings.System.canWrite(context) ? 1 : 0;
-
-
 
 
         synchronized (this) {
@@ -1258,16 +1324,16 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         }
 
         return (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
-            PackageManager.PERMISSION_GRANTED &&
+                PackageManager.PERMISSION_GRANTED &&
 
 
-            (ContextCompat.checkSelfPermission
-                    (this, Manifest.permission.WRITE_SETTINGS) == PackageManager.PERMISSION_GRANTED ||
-                    (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ||
-                    Settings.System.canWrite(context))) &&   //warrning but line above we check it, so no way to get here API<23
-
-            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
-                    PackageManager.PERMISSION_GRANTED);
+                (ContextCompat.checkSelfPermission
+                        (this, Manifest.permission.WRITE_SETTINGS) == PackageManager.PERMISSION_GRANTED ||
+                        (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ||
+                                //warrning but line above we check it, so no way to get here API<23
+                                Settings.System.canWrite(context))) &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                        PackageManager.PERMISSION_GRANTED);
     }
 
     private void takingPictureRefresh() {
@@ -1276,7 +1342,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 myCameraObj.startPreview();
                 try {
                     // show TIME over screen that left to TAKE ANOTHER PHOTO SHOT
-                    lastPictureAtSeconds = lastPictureAtSeconds == 0 ? System.currentTimeMillis() : lastPictureAtSeconds;
+                    lastPictureAtSeconds = lastPictureAtSeconds == 0
+                            ? System.currentTimeMillis() : lastPictureAtSeconds;
                     showTimeCounterToNextPhoto(SP_Data.getShowTimeOnShotPhoto()
                             , photoFrequency - (int) (System.currentTimeMillis() - lastPictureAtSeconds) / 1000);
 
@@ -1289,16 +1356,17 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                         // read DB picture resolution
                         Camera.Parameters localParams = myCameraObj.getParameters();
                         String indexOfSize = sharedPref.getString(getResources().
-                                getString(R.string.SP_photo_resolution),"0");
+                                getString(R.string.SP_photo_resolution), "0");
                         localParams.setPictureSize(photoSizesL.get(Integer.valueOf(indexOfSize)).width,
                                 photoSizesL.get(Integer.valueOf(indexOfSize)).height);
 
                         // set Focus Modes
                         String curFocusMode = sharedPref.getString
-                                (getResources().getString(R.string.SP_photo_focus_mode),"default");
+                                (getResources().getString(R.string.SP_photo_focus_mode), "default");
                         if (!curFocusMode.equals("default"))
                             localParams.setFocusMode
-                                    (myCameraObj.getParameters().getSupportedFocusModes().get(Integer.parseInt(curFocusMode)));
+                                    (myCameraObj.getParameters().getSupportedFocusModes()
+                                            .get(Integer.parseInt(curFocusMode)));
                         myCameraObj.setParameters(localParams);
 
                         // DB has been readen
@@ -1334,20 +1402,24 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         synchronized (this) {
             // if to record
             if (CameraIsCurrentlyRecording || makingVideoActivated) {
-                Log.e("Record Time: ", ((System.currentTimeMillis() - cameraRecordStartedAtSeconds) / 1000) + " seconds");
+                Log.e("Record Time: "
+                        , ((System.currentTimeMillis() - cameraRecordStartedAtSeconds) / 1000) + " seconds");
                 // show record TIME ON SCREEN (TextView)
                 if (makingVideoActivated) {
                     int timeRecording = (int) (System.currentTimeMillis() - cameraRecordStartedAtSeconds) / 1000;
                     // x > y ? : ; - protect against timeRecording HUGE value, when cameraRecordStartedAtSeconds == 0
-                    showTimeRecording(SP_Data.getShowRecTimeOnScreen(), timeRecording > videoRecordingTimeInSeconds ? 0 : timeRecording);
+                    showTimeRecording(SP_Data.getShowRecTimeOnScreen()
+                            , timeRecording > videoRecordingTimeInSeconds ? 0 : timeRecording);
                 }
 
                 // --- TAKE CARE OF RECORD VIDEO ---
                 // if ...STOP RECORDING
                 if (!makingVideoActivated
-                        || ((System.currentTimeMillis() - cameraRecordStartedAtSeconds) / 1000 >= videoRecordingTimeInSeconds
+                        || ((System.currentTimeMillis() - cameraRecordStartedAtSeconds) / 1000
+                        >= videoRecordingTimeInSeconds
                         && cameraRecordStartedAtSeconds != 0)) {
-                    // stop recording and release camera, TRY prevents CRASH in situation when user immediately STARTS and STOPS recording
+                    // stop recording and release camera, TRY prevents CRASH in situation when user
+                    // immediately STARTS and STOPS recording
 
 
 
@@ -1366,10 +1438,6 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                         e.printStackTrace();
                         Log.e("mMediaRecorder", "unable to call mMediaRecored.stop() method");
                     }*/
-
-
-
-
 
 
                     stopCamVideoRecording();
@@ -1405,7 +1473,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                                 gallery and five on our list, (repeat process might cause 0 videos inside gallery,
                                 and 5 on our list)
                                 */
-                                boolean isDeleted = listOfVideoFiles.get(listOfVideoFiles.size()-1).delete();
+                                boolean isDeleted = listOfVideoFiles.get(listOfVideoFiles.size() - 1).delete();
                                 if (isDeleted)
                                     listOfVideoFiles.remove(listOfVideoFiles.size() - 1);
 
@@ -1459,7 +1527,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             }
         }
         // pictures and videos are ORDERED from 0 index THE OLDEST FILE, to LAST INDEX - NEWEST FILE
-        else if (mediaType == MEDIA_TYPE_VIDEO){
+        else if (mediaType == MEDIA_TYPE_VIDEO) {
             if (listOfVideoFiles != null) {
                 while (listOfVideoFiles.size() > filesAmountLimit) {
                     deleted = listOfVideoFiles.get(0).delete();
@@ -1469,8 +1537,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                     //refreshGallery(name);
                 }
             }
-        }
-        else{
+        } else {
             Log.e(TAG, "Wrong mediatype sent into method.");
             return false;
         }
@@ -1516,7 +1583,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
      @param context : it is the reference where this method get called
      @param docPath : absolute path of file for which broadcast will be send to refresh media database
      **/
-    public static void refreshSystemMediaScanDataBase(Context context, String docPath){
+    public static void refreshSystemMediaScanDataBase(Context context, String docPath) {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         Uri contentUri = Uri.fromFile(new File(docPath));
         mediaScanIntent.setData(contentUri);
@@ -1525,16 +1592,15 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
     private void showTimeCounterToNextPhoto(boolean showTimeOnShotPhoto, final int lastPictureTime) {
         final TextView tv_phtTimeCounter = (TextView) findViewById(R.id.tv_time_to_shot_photo);
-        if (showTimeOnShotPhoto){
+        if (showTimeOnShotPhoto) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     tv_phtTimeCounter.setVisibility(View.VISIBLE);
-                    tv_phtTimeCounter.setText(lastPictureTime + "");
+                    tv_phtTimeCounter.setText(lastPictureTime);
                 }
             });
-        }
-        else
+        } else
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -1547,20 +1613,19 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     private void showTimeRecording(boolean showTimeRecordin, final int recordingTimeInSeconds) {
 
         final TextView tv_videoRecordTimeCounter = (TextView) findViewById(R.id.tv_time_recording);
-        if (showTimeRecordin){
+        if (showTimeRecordin) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     tv_videoRecordTimeCounter.setVisibility(View.VISIBLE);
-                    String timeRecord = String.valueOf(recordingTimeInSeconds/600) +
-                            (recordingTimeInSeconds/60)%10 + ":"
-                            + ((recordingTimeInSeconds%60)/10)
-                            + (recordingTimeInSeconds - (recordingTimeInSeconds/10)*10);
+                    String timeRecord = String.valueOf(recordingTimeInSeconds / 600) +
+                            (recordingTimeInSeconds / 60) % 10 + ":"
+                            + ((recordingTimeInSeconds % 60) / 10)
+                            + (recordingTimeInSeconds - (recordingTimeInSeconds / 10) * 10);
                     tv_videoRecordTimeCounter.setText(timeRecord);
                 }
             });
-        }
-        else
+        } else
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -1581,7 +1646,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
         // get SharedPref
         sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        videoQualityMode = sharedPref.getString(getResources().getString(R.string.SP_video_quality),"0");
+        videoQualityMode = sharedPref.getString(getResources().getString(R.string.SP_video_quality), "0");
 
         context = this;
 
@@ -1605,15 +1670,20 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
     @Override
     protected void onStart() {
-        if(getThreePermisions()){
+        // PERMISSIONS
+        if (getThreePermisions()) {
             // if there is possibility to get PERMISSION for that particular DEVICE, then do so
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M &&
-                        Settings.System.canWrite(context) &&
-                        ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SETTINGS)
-                                != PackageManager.PERMISSION_GRANTED
-                        )
-                    getPermissionToWriteSettings();
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M &&
+                    Settings.System.canWrite(context) &&
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SETTINGS)
+                            != PackageManager.PERMISSION_GRANTED
+                    )
+                getPermissionToWriteSettings();
         }
+
+        // GPS
+        googleApiClient.connect();
+
         super.onStart();
     }
 
@@ -1623,7 +1693,6 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                         PackageManager.PERMISSION_GRANTED) {
-
 
 
             // if API >= M permission granted in Manifest, if canWrite() is false then u cannot even use WRITE_SETTINGS
@@ -1657,7 +1726,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                                 (this, Manifest.permission.WRITE_SETTINGS) != PackageManager.PERMISSION_GRANTED
                                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                                 && Settings.System.canWrite(context)
-                                ) ||
+                        ) ||
 
                         ContextCompat.checkSelfPermission
                                 (this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
@@ -1667,26 +1736,29 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
                 ) {
 
-                // Should we show an explanation?
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.CAMERA)) {
-                    // Show an expanation to the user *asynchronously* -- don't block
-                    // this thread waiting for the user's response! After the user
-                    // sees the explanation, try again to request the permission.
-                    // Camera Permission Explanation
-                    Toast.makeText(this, R.string.camera_permisssion_explanation, Toast.LENGTH_LONG).show();
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.CAMERA)) {
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                // Camera Permission Explanation
+                Toast.makeText(this, R.string.camera_permisssion_explanation, Toast.LENGTH_LONG).show();
 
-                }
-                ActivityCompat.requestPermissions(this,
-                        new String[]{
-                                Manifest.permission.CAMERA,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                Manifest.permission.RECORD_AUDIO,
-                                Manifest.permission.WRITE_SETTINGS},
-                        MY_MULTIPLE_PERMISSIONS_REQUEST);
-
-                return false;
             }
+            ActivityCompat.requestPermissions(this,
+                    new String[]{
+                            Manifest.permission.CAMERA,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.RECORD_AUDIO,
+                            Manifest.permission.WRITE_SETTINGS,
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                    },
+                    MY_MULTIPLE_PERMISSIONS_REQUEST);
+
+            return false;
+        }
         // if PERMISSIONS are allowed from manifest (not dynamically), then use method to initializate objects
         else
             initializateMostImportantObjectForAppWorking();
@@ -1701,17 +1773,17 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
 
 
-
-        // ##################################################################################################################
-        // ######################################### OPTIONS CAMERA SECTION #################################################
-        // ##################################################################################################################
+        // ##########################################################################################
+        // ######################################### OPTIONS CAMERA SECTION #########################
+        // ##########################################################################################
 
         // GET SCENE MODE
-        String sceneModeData  = sharedPref.getString(getResources().getString(R.string.SP_camera_mode), "empty");
+        String sceneModeData = sharedPref
+                .getString(getResources().getString(R.string.SP_camera_mode), "empty");
         if (!sceneModeData.equals("empty")) {
 
             // if .getSupportedSceneModes == null means there's no support for scene modes
-            List <String> supportedSceneModes = params.getSupportedSceneModes();
+            List<String> supportedSceneModes = params.getSupportedSceneModes();
             if (supportedSceneModes != null)
                 params.setSceneMode(supportedSceneModes.get(Integer.parseInt(sceneModeData)));
 
@@ -1724,7 +1796,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             modesListPanel[Integer.parseInt(sceneModeData)].setActivated(true);
 
 
-            switch(sceneModeData){
+            switch (sceneModeData) {
                 case "0":
                     modeButtonToOpenPanelIcon.setImageResource(R.mipmap.not_set);
                     modeButtonToOpenPanelTV.setText(R.string.not_set);
@@ -1763,33 +1835,35 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         }
 
         // GET WHITE BALANCE
-        String whiteBalanceData  = sharedPref.getString(getResources().getString(R.string.SP_camera_white_balance), "empty");
+        String whiteBalanceData = sharedPref
+                .getString(getResources().getString(R.string.SP_camera_white_balance), "empty");
         // invoke when it's not EMPTY and when it's SETTED (0 index means - not set)
         if (!whiteBalanceData.equals("empty") && !whiteBalanceData.equals("0"))
             params.setWhiteBalance(params.getSupportedWhiteBalance()
-                    .get(Integer.parseInt(whiteBalanceData)-1)); // - 1 cause "not set"
+                    .get(Integer.parseInt(whiteBalanceData) - 1)); // - 1 cause "not set"
 
 
         // GET EXPOSURE COMPENSATION
-        String indexOfExposureCompensationData  = sharedPref.getString(getResources()
+        String indexOfExposureCompensationData = sharedPref.getString(getResources()
                 .getString(R.string.SP_camera_exposure_compensation), "empty");
         // invoke when it's not EMPTY and when it's SETTED (0 index means - not set)
         if (!indexOfExposureCompensationData.equals("empty") && !indexOfExposureCompensationData.equals("0")) {
-            String exposureCompensationData  = String.valueOf(params.getMinExposureCompensation()
-                    + (Integer.valueOf(indexOfExposureCompensationData)-1)); // - 1 cause "not set"
+            String exposureCompensationData = String.valueOf(params.getMinExposureCompensation()
+                    + (Integer.valueOf(indexOfExposureCompensationData) - 1)); // - 1 cause "not set"
             params.setExposureCompensation(Integer.parseInt(exposureCompensationData));
         }
 
 
         // GET ANTIBANDING
         // invoke when it's not EMPTY and when it's SETTED (0 index means - not set)
-        String antibandingData  = sharedPref.getString(getResources().getString(R.string.SP_camera_antibanding), "empty");
+        String antibandingData = sharedPref
+                .getString(getResources().getString(R.string.SP_camera_antibanding), "empty");
         if (!antibandingData.equals("empty") && !antibandingData.equals("0"))
-            params.setAntibanding(params.getSupportedAntibanding().get(Integer.parseInt(antibandingData)-1));
+            params.setAntibanding(params.getSupportedAntibanding().get(Integer.parseInt(antibandingData) - 1));
 
 
         // GET FALLING IN CASE OF ERROR
-        String fallingInCaseOfErrorsData  = sharedPref.getString(getResources()
+        String fallingInCaseOfErrorsData = sharedPref.getString(getResources()
                 .getString(R.string.SP_camera_falling_in_case_of_error), "empty");
         if (!fallingInCaseOfErrorsData.equals("empty"))
             switch (fallingInCaseOfErrorsData) {
@@ -1808,25 +1882,29 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             }
 
 
-        // ##################################################################################################################
-        // ######################################### OPTIONS VIDEO SECTION #################################################
-        // ##################################################################################################################
+        // #######################################################################################################
+        // ######################################### OPTIONS VIDEO SECTION #######################################
+        // #######################################################################################################
 
 
         // VIDEO CAMERA OPERATION
-        /*String videoCameraOperationData  = sharedPref.getString(getResources().getString(R.string.SP_video_camera_operation), "empty");
+        /*String videoCameraOperationData  = sharedPref.getString(getResources()
+        .getString(R.string.SP_video_camera_operation), "empty");
         if (!videoCameraOperationData.equals("empty"))
             params.setVideoStabilization(videoCameraOperationData);*/
 
         // GET VIDEO STABILIZATION
-        boolean videoStabilizationData  = sharedPref.getBoolean(getResources().getString(R.string.SP_video_stabilization), false);
+        boolean videoStabilizationData = sharedPref
+                .getBoolean(getResources().getString(R.string.SP_video_stabilization), false);
         params.setVideoStabilization(videoStabilizationData);
 
 
         // GET VIDEO FILE LENGTH
-        int videoRecordingTimeInSecondsIndex = Integer.valueOf(sharedPref.getString(getResources().getString(R.string.SP_video_length_per_file),"5"));
+        int videoRecordingTimeInSecondsIndex = Integer.valueOf(sharedPref
+                .getString(getResources().getString(R.string.SP_video_length_per_file), "5"));
         videoRecordingTimeInSeconds =
-                Integer.valueOf(getResources().getStringArray(R.array.e_video_file_length_in_seconds)[videoRecordingTimeInSecondsIndex]);
+                Integer.valueOf(getResources().getStringArray
+                        (R.array.e_video_file_length_in_seconds)[videoRecordingTimeInSecondsIndex]);
 
 
         myCameraObj.setParameters(params);
@@ -1835,8 +1913,9 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
 
     private void demandOrientationSettings() {
-        String currentOrientationSettings = sharedPref.getString(getResources().getString(R.string.SP_orientation), "0");
-        switch (currentOrientationSettings){
+        String currentOrientationSettings = sharedPref
+                .getString(getResources().getString(R.string.SP_orientation), "0");
+        switch (currentOrientationSettings) {
             // Auto Orientation
             case "0":
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
@@ -1869,29 +1948,32 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
 
     private void useAppBrightness() {
-        if (sharedPref.getBoolean(getResources().getString(R.string.SP_general_brightness_seek_bar), false)){
-            Float appBrightness =sharedPref.getFloat(getResources().getString(R.string.SP_general_brightness_seek_bar_intensity), (float)0.5);
+        if (sharedPref.getBoolean(getResources().getString(R.string.SP_general_brightness_seek_bar), false)) {
+            Float appBrightness = sharedPref.getFloat(getResources()
+                    .getString(R.string.SP_general_brightness_seek_bar_intensity), (float) 0.5);
             //System.out.println(appBrightness);
             Settings.System.putInt(this.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS,
-                    Math.round(appBrightness*255)); // brightness 0 to 255
+                    Math.round(appBrightness * 255)); // brightness 0 to 255
             WindowManager.LayoutParams lp = getWindow().getAttributes();
             lp.screenBrightness = appBrightness < 0.01f ? 0.01f : appBrightness;// interval 0.0 to 1.0
             getWindow().setAttributes(lp);
-        }
-        else{
+        } else {
             int currentSystemBrightness = android.provider.Settings.System.
-                    getInt(getContentResolver(), android.provider.Settings.System.SCREEN_BRIGHTNESS,-1);
+                    getInt(getContentResolver(), android.provider.Settings.System.SCREEN_BRIGHTNESS, -1);
 
-            Settings.System.putInt(this.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, currentSystemBrightness); // brightness 0 to 255
+            Settings.System.putInt(this.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS
+                    , currentSystemBrightness); // brightness 0 to 255
 
             WindowManager.LayoutParams lp = getWindow().getAttributes();
-            lp.screenBrightness = (currentSystemBrightness/255.0f) < 0.01f ? 0.01f : (currentSystemBrightness/255.0f);// interval 0.0 to 1.0
+            lp.screenBrightness = (currentSystemBrightness / 255.0f) < 0.01f ? 0.01f
+                    : (currentSystemBrightness / 255.0f);// interval 0.0 to 1.0
             getWindow().setAttributes(lp);
         }
     }
 
     private void disableOrEnableLockScreen() {
-        Boolean syncConnPref = sharedPref.getBoolean(getResources().getString(R.string.SP_general_screen_locked), false);
+        Boolean syncConnPref = sharedPref.getBoolean(getResources()
+                .getString(R.string.SP_general_screen_locked), false);
 
         PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
         wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
@@ -1910,19 +1992,19 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
     private boolean initializateMyFileListsObjects() {
         File photoDirectory = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_PICTURES), context.getString(R.string.car_cam_photos));
+                Environment.DIRECTORY_PICTURES), context.getString(R.string.car_cam_photos));
         File videoDirectory = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_PICTURES), context.getString(R.string.car_cam_videos));
+                Environment.DIRECTORY_PICTURES), context.getString(R.string.car_cam_videos));
 
         boolean result = true;
         // check IF folders exists, if no TRY to create
         if (!photoDirectory.exists())
-            if (!photoDirectory.mkdirs()){
+            if (!photoDirectory.mkdirs()) {
                 Log.d("Get Files From Memory", "failed to create PHOTO directory");
                 result = false;
             }
         if (!videoDirectory.exists())
-            if (!videoDirectory.mkdirs()){
+            if (!videoDirectory.mkdirs()) {
                 Log.d("Get Files From Memory", "failed to create VIDEO directory");
                 result = false;
             }
@@ -1930,30 +2012,30 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         // if UNABLE TO READ DIRECTORIES, show ALERT and close app
         if (!result)
             new AlertDialog.Builder(context).setTitle(R.string.memory_error)
-                .setMessage(R.string.cannot_read_files_folder)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                }).create()
-                .show();
+                    .setMessage(R.string.cannot_read_files_folder)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    }).create()
+                    .show();
 
 
         // initializate LISTS of FILES
         listOfPictureFiles = new ArrayList<>(Arrays.asList(photoDirectory.listFiles()));
         // bubble sorting, sort from 0 index OLDEST FILE, last index NEWEST FILE
         for (int i = 0; i < listOfPictureFiles.size(); ++i)
-            for (int j = 1; j < listOfPictureFiles.size()-i;++j)
-                if (listOfPictureFiles.get(j-1).lastModified()>listOfPictureFiles.get(j).lastModified())
-                    Collections.swap(listOfPictureFiles,j-1,j);
+            for (int j = 1; j < listOfPictureFiles.size() - i; ++j)
+                if (listOfPictureFiles.get(j - 1).lastModified() > listOfPictureFiles.get(j).lastModified())
+                    Collections.swap(listOfPictureFiles, j - 1, j);
 
         listOfVideoFiles = new ArrayList<>(Arrays.asList(videoDirectory.listFiles()));
         // bubble sorting, sort from 0 index OLDEST FILE, last index NEWEST FILE
         for (int i = 0; i < listOfVideoFiles.size(); ++i)
-            for (int j = 1; j < listOfVideoFiles.size()-i;++j)
-                if (listOfVideoFiles.get(j-1).lastModified()>listOfVideoFiles.get(j).lastModified())
-                    Collections.swap(listOfVideoFiles,j-1,j);
+            for (int j = 1; j < listOfVideoFiles.size() - i; ++j)
+                if (listOfVideoFiles.get(j - 1).lastModified() > listOfVideoFiles.get(j).lastModified())
+                    Collections.swap(listOfVideoFiles, j - 1, j);
 
         return result;
     }
@@ -1971,9 +2053,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
         // BROADCAST CRAHSES EMULATOR, BUT WE MUST TURN IT ON WHEN STOP TESTING ON EMULATOR
         // GOOGLE NOW PREVENTS FROM APP SENDING BROADCAST (SINCE 4.4 Android ? )
-        //context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
-
-
+        //context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"
+        // + Environment.getExternalStorageDirectory())));
 
 
         releaseMediaRecorder();       // if you are using MediaRecorder, release it first
@@ -1999,16 +2080,16 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
     @Override
     public void onBackPressed() {
-        String whatToToWhenBackPressed = sharedPref.getString(getResources().getString(R.string.SP_general_back_button),"0");
+        String whatToToWhenBackPressed = sharedPref.getString(getResources()
+                .getString(R.string.SP_general_back_button), "0");
 
         // if choose camera mode panel is opened, then onBackPressed just make it disappear and NOTHING MORE
-        if (modeButtonToOpenPanel.isActivated()){
+        if (modeButtonToOpenPanel.isActivated()) {
             // Inactive button that opens panel
             modeButtonToOpenPanel.setActivated(false);
             // HIDE Panel
             modeButtonFromChoosingPanel.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             switch (whatToToWhenBackPressed) {
                 case "0":
                     chooseWhatToDoWhenBackButtonClicked();
@@ -2048,7 +2129,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.continue_in_background:
                 closeAppAndContinueInBackground();
                 break;
@@ -2065,7 +2146,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     }
 
 
-    private void releaseMediaRecorder(){
+    private void releaseMediaRecorder() {
         if (mMediaRecorder != null) {
             mMediaRecorder.reset();   // clear recorder configuration
             mMediaRecorder.release(); // release the recorder object
@@ -2074,8 +2155,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         }
     }
 
-    private void releaseCamera(){
-        if (myCameraObj != null){
+    private void releaseCamera() {
+        if (myCameraObj != null) {
             mPreview.getHolder().removeCallback(mPreview);
             myCameraObj.release();        // release the camera for other applications
             myCameraObj = null;
@@ -2086,12 +2167,12 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     public static final int MEDIA_TYPE_VIDEO = 2;
 
     /** Create a file Uri for saving an image or video */
-    private static Uri getOutputMediaFileUri(int type){
+    private static Uri getOutputMediaFileUri(int type) {
         return Uri.fromFile(getOutputMediaFile(type));
     }
 
     /** Create a File for saving an image or video */
-    private static File getOutputMediaFile(int type){
+    private static File getOutputMediaFile(int type) {
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
 
@@ -2099,8 +2180,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         if (type == MEDIA_TYPE_IMAGE) {
             mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_PICTURES), context.getString(R.string.car_cam_photos));
-        }
-        else if(type == MEDIA_TYPE_VIDEO) {
+        } else if (type == MEDIA_TYPE_VIDEO) {
             mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_PICTURES), context.getString(R.string.car_cam_videos));
         } else {
@@ -2111,8 +2191,8 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         // between applications and persist after your app has been uninstalled.
 
         // Create the storage directory if it does not exist
-        if (! mediaStorageDir.exists()){
-            if (! mediaStorageDir.mkdirs()){
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
                 Log.d("MyCameraApp", "failed to create directory");
                 return null;
             }
@@ -2121,12 +2201,12 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         // Create a media file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File mediaFile;
-        if (type == MEDIA_TYPE_IMAGE){
+        if (type == MEDIA_TYPE_IMAGE) {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "IMG_"+ timeStamp + ".jpg");
-        } else if(type == MEDIA_TYPE_VIDEO) {
+                    "IMG_" + timeStamp + ".jpg");
+        } else if (type == MEDIA_TYPE_VIDEO) {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "VID_"+ timeStamp + ".mp4");
+                    "VID_" + timeStamp + ".mp4");
         } else {
             return null;
         }
@@ -2137,7 +2217,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     public void changeModeButtonClicked(View view) {
 
         // if NO CAMERA PERMISSION GRANTED
-        if (ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
             getPermissionsCamera();
 
         else {
@@ -2163,55 +2243,52 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             item.setActivated(false);
 
 
-
-
-
         // save SP data and ACTIVATE one selected
-        switch(view.getId()) {
+        switch (view.getId()) {
             case R.id.not_set_button_ll_id:
-                editor.putString(getResources().getString(R.string.SP_camera_mode),"0");
+                editor.putString(getResources().getString(R.string.SP_camera_mode), "0");
                 modesListPanel[0].setActivated(true);
                 modeButtonToOpenPanelIcon.setImageResource(R.mipmap.not_set);
                 modeButtonToOpenPanelTV.setText(R.string.not_set);
                 break;
             case R.id.daylight_button_ll_id:
-                editor.putString(getResources().getString(R.string.SP_camera_mode),"1");
+                editor.putString(getResources().getString(R.string.SP_camera_mode), "1");
                 modesListPanel[1].setActivated(true);
                 modeButtonToOpenPanelIcon.setImageResource(R.mipmap.daylight);
                 modeButtonToOpenPanelTV.setText(R.string.daylight);
                 break;
             case R.id.sunny_button_ll_id:
-                editor.putString(getResources().getString(R.string.SP_camera_mode),"2");
+                editor.putString(getResources().getString(R.string.SP_camera_mode), "2");
                 modesListPanel[2].setActivated(true);
                 modeButtonToOpenPanelIcon.setImageResource(R.mipmap.sunny);
                 modeButtonToOpenPanelTV.setText(R.string.sunny);
                 break;
             case R.id.cloudy_button_ll_id:
-                editor.putString(getResources().getString(R.string.SP_camera_mode),"3");
+                editor.putString(getResources().getString(R.string.SP_camera_mode), "3");
                 modesListPanel[3].setActivated(true);
                 modeButtonToOpenPanelIcon.setImageResource(R.mipmap.cloudy);
                 modeButtonToOpenPanelTV.setText(R.string.cloudy);
                 break;
             case R.id.moonlight_button_ll_id:
-                editor.putString(getResources().getString(R.string.SP_camera_mode),"4");
+                editor.putString(getResources().getString(R.string.SP_camera_mode), "4");
                 modesListPanel[4].setActivated(true);
                 modeButtonToOpenPanelIcon.setImageResource(R.mipmap.moonlight);
                 modeButtonToOpenPanelTV.setText(R.string.moonlight);
                 break;
             case R.id.dark_night_button_ll_id:
-                editor.putString(getResources().getString(R.string.SP_camera_mode),"5");
+                editor.putString(getResources().getString(R.string.SP_camera_mode), "5");
                 modesListPanel[5].setActivated(true);
                 modeButtonToOpenPanelIcon.setImageResource(R.mipmap.dark_night);
                 modeButtonToOpenPanelTV.setText(R.string.dark_night);
                 break;
             case R.id.city_night_button_ll_id:
-                editor.putString(getResources().getString(R.string.SP_camera_mode),"6");
+                editor.putString(getResources().getString(R.string.SP_camera_mode), "6");
                 modesListPanel[6].setActivated(true);
                 modeButtonToOpenPanelIcon.setImageResource(R.mipmap.city_night);
                 modeButtonToOpenPanelTV.setText(R.string.city_night);
                 break;
             case R.id.custom_button_ll_id:
-                editor.putString(getResources().getString(R.string.SP_camera_mode),"7");
+                editor.putString(getResources().getString(R.string.SP_camera_mode), "7");
                 modesListPanel[7].setActivated(true);
                 modeButtonToOpenPanelIcon.setImageResource(R.mipmap.custom);
                 modeButtonToOpenPanelTV.setText(R.string.custom);
@@ -2221,5 +2298,44 @@ public class MainActivity extends AppCompatActivity implements Runnable {
 
         // disactive bottom panel button (Mode List Opening Button)
         modeButtonToOpenPanel.setActivated(false);
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        requestLocationUpdates();
+    }
+
+    private void requestLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission
+                (this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                &&
+                ActivityCompat.checkSelfPermission
+                (this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
     }
 }

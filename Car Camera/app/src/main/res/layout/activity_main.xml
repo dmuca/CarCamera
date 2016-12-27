@@ -198,7 +198,8 @@
                         android:paddingTop="15dp"
                         android:paddingBottom="15dp"
                         android:layout_weight="20"
-                        android:src="@mipmap/gps_icon"
+                        android:id="@+id/gps_icon_id"
+                        android:src="@mipmap/gps_off_icon"
                         />
                     <View
                         android:layout_width="0dp"
@@ -212,14 +213,14 @@
                         android:layout_weight="27"
                         android:orientation="horizontal"
                         android:gravity="bottom|left"
+                        android:id="@+id/speed_sector_visibility_ll_id"
                         >
                         <TextView
                             style="@style/whiteTextOverCamera"
                             android:text="60 "
                             android:gravity="bottom|start"
-                            android:id="@+id/kilometers_text_view_id"
+                            android:id="@+id/speed_text_view_id"
                             android:textSize="22sp"
-
                             android:shadowColor="@color/shadowTextViewColor"
                             android:shadowDx="2"
                             android:shadowDy="2"
@@ -250,6 +251,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="35"
                         android:orientation="vertical"
+                        android:id="@+id/coords_sector_visibility_ll_id"
                         >
                         <!-- Latitude Text -->
                         <LinearLayout

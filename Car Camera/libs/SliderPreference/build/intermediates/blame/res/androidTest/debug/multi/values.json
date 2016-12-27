@@ -1,6 +1,10 @@
 [
     {
-        "outputFile": "C:\\Users\\Hoymm\\Desktop\\My Best Applications\\CarCamera\\Car Camera\\libs\\SliderPreference\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values\\values.xml",
+        "outputFile": "/home/hoymm/Projects/CarCamera/Car Camera/C:\\Users\\Hoymm\\Desktop\\My Best Applications\\CarCamera\\Car Camera\\libs\\SliderPreference\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values\\values.xml",
+        "map": []
+    },
+    {
+        "outputFile": "/home/hoymm/Projects/CarCamera/Car Camera/libs/SliderPreference/build/intermediates/incremental/mergeDebugAndroidTestResources/merged.dir/values/values.xml",
         "map": []
     }
 ]

@@ -122,41 +122,29 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
         // stop preview before making changes
         try {
-            mCamera.stopPreview();
+            mCamera.stopPreview();// you must call it before setDisplayOrienation(), or crash will occur
+
+            // ADJUST Orientation for ALL DEVICES
+            Display display = ((WindowManager) MainActivity.context.getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+
+
+            if (display.getRotation() == Surface.ROTATION_0) {
+                l_parameters.setPreviewSize(bestResolutionForCamPrev.width, bestResolutionForCamPrev.height);
+                mCamera.setDisplayOrientation(90);
+            } else if (display.getRotation() == Surface.ROTATION_90) {
+                l_parameters.setPreviewSize(bestResolutionForCamPrev.width, bestResolutionForCamPrev.height);
+            } else if (display.getRotation() == Surface.ROTATION_180) {
+                l_parameters.setPreviewSize(bestResolutionForCamPrev.width, bestResolutionForCamPrev.height);
+            } else if (display.getRotation() == Surface.ROTATION_270) {
+                l_parameters.setPreviewSize(bestResolutionForCamPrev.width, bestResolutionForCamPrev.height);
+                mCamera.setDisplayOrientation(180);
+            }
+            mCamera.startPreview(); // you must call it after setDisplayOrienation(), or crash will occur
+            mCamera.setParameters(l_parameters);
         } catch (Exception e){
             // ignore: tried to stop a non-existent preview
         }
 
-
-        // ADJUST Orientation for ALL DEVICES
-        Display display = ((WindowManager)MainActivity.context.getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
-
-
-
-
-        if(display.getRotation() == Surface.ROTATION_0)
-        {
-            l_parameters.setPreviewSize(bestResolutionForCamPrev.width,bestResolutionForCamPrev.height);
-            mCamera.setDisplayOrientation(90);
-        }
-
-        else if(display.getRotation() == Surface.ROTATION_90)
-        {
-            l_parameters.setPreviewSize(bestResolutionForCamPrev.width,bestResolutionForCamPrev.height);
-        }
-
-        else if(display.getRotation() == Surface.ROTATION_180)
-        {
-            l_parameters.setPreviewSize(bestResolutionForCamPrev.width,bestResolutionForCamPrev.height);
-        }
-
-        else if(display.getRotation() == Surface.ROTATION_270)
-        {
-            l_parameters.setPreviewSize(bestResolutionForCamPrev.width,bestResolutionForCamPrev.height);
-            mCamera.setDisplayOrientation(180);
-        }
-
-        mCamera.setParameters(l_parameters);
         previewCamera();
 
     }
