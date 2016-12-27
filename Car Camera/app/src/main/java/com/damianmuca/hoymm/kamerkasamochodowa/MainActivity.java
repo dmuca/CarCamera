@@ -475,6 +475,77 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
         } else
             return true;
     }
+    // get NEEDED PERMISSIONS for GPS WHEN APP STARTS
+    private boolean getGPSPermissions() {
+        // Here, thisActivity is the current activity -- ACCESS_COARSE_LOCATION
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED
+                ) {
+
+            //......................................................................................
+            // If ACCESS_COARSE_LOCATION NOT GRANTED
+            //......................................................................................
+            // Should we show an explanation?
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION)) {
+
+                    // Show an expanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+
+                    // Camera Permission Explanation
+                    Toast.makeText(this, R.string.location_permission_explanation, Toast.LENGTH_LONG)
+                            .show();
+
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                            MY_PERMISSION_ACCESS_COARSE_LOCATION_REQUEST);
+
+                } else
+                    // No explanation needed, we can request the permission.
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                            MY_PERMISSION_ACCESS_COARSE_LOCATION_REQUEST);
+            }
+
+
+
+            //......................................................................................
+            // If ACCESS_FINE_LOCATION NOT GRANTED
+            //......................................................................................
+            // Should we show an explanation?
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                    // Show an expanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+
+                    // Camera Permission Explanation
+                    Toast.makeText(this, R.string.location_permission_explanation, Toast.LENGTH_LONG)
+                            .show();
+
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            MY_PERMISSION_ACCESS_FINE_LOCATION_REQUEST);
+
+                } else
+                    // No explanation needed, we can request the permission.
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            MY_PERMISSION_ACCESS_FINE_LOCATION_REQUEST);
+            }
+            return false;
+        } else
+            return true;
+    }
 
     // get WRITE EXTERNAL STORAGE PERMISSION
     private boolean getPermissionsWriteExternalStorage() {
@@ -2337,5 +2408,9 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
     @Override
     public void onLocationChanged(Location location) {
 
+    }
+
+    public void onGPS_IVClicked(View view) {
+        getGPSPermissions();
     }
 }

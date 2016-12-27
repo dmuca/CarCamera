@@ -566,4 +566,5 @@
     <string name="modify_encoder_or_bitrate">Sorry, video cannot be recorded. Please try modify encoder or resolution, or other settings when using custom resolution.</string>
     <string name="access_fine_location_not_granted">ACCESS FINE LOCATION - Permission not granted.</string>
     <string name="access_coarse_location_permission_not_granted">ACCESS COARSE LOCATION - Permission not granted</string>
+    <string name="location_permission_explanation">I need that permission to use GPS, so I can show your speed and position</string>
 </resources>

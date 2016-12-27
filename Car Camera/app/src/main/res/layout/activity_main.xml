@@ -198,6 +198,8 @@
                         android:paddingTop="15dp"
                         android:paddingBottom="15dp"
                         android:layout_weight="20"
+                        android:clickable="true"
+                        android:onClick="onGPS_IVClicked"
                         android:id="@+id/gps_icon_id"
                         android:src="@mipmap/gps_off_icon"
                         />
