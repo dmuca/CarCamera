@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
     private FusedLocationProviderApi locationProvider = LocationServices.FusedLocationApi;
+    private Double myGPSLatitude, myGPSLongtitude;
 
     static private List<Camera.Size> cameraSizesL, photoSizesL;
     ArrayList<File> listOfVideoFiles = null, listOfPictureFiles = null;
@@ -114,6 +115,8 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
     FrameLayout camViewPreview;
 
     private int videoRecordingTimeInSeconds;
+
+
     private boolean refreshBottomResolutionsTV = false;
 
     @Override
@@ -197,6 +200,89 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
                 })).create();
         wrongEncoderOrResolution_AD
                 .setIcon(android.R.drawable.stat_sys_warning);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // A WARRNING BELOW
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         // need system permission to modify system settings ALERT DIALOG
@@ -1712,6 +1798,8 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
 
     @Override
     protected void onResume() {
+        super.onResume();
+
         isThatOk = true;
         refreshBottomResolutionsTV = true;
 
@@ -1736,7 +1824,10 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
 
         // GET GENERAL SETTINGS
         disableOrEnableLockScreen();
-        super.onResume();
+
+        if(googleApiClient.isConnected()){
+            requestLocationUpdates();
+        }
     }
 
     @Override
@@ -2146,6 +2237,19 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
 
         myThread = null;
 
+        // ...GPS
+        try {
+            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        googleApiClient.disconnect();
     }
 
 
@@ -2407,7 +2511,12 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
 
     @Override
     public void onLocationChanged(Location location) {
+        myGPSLatitude = location.getLatitude();
+        myGPSLongtitude = location.getLongitude();
 
+        // REFRESH longtitude and latitude INFO on the panel
+        latitudeTV.setText(String.valueOf(myGPSLatitude));
+        longtitudeTV.setText(String.valueOf(myGPSLongtitude));
     }
 
     public void onGPS_IVClicked(View view) {
