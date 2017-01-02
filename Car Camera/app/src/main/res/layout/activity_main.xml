@@ -194,10 +194,10 @@
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
+                        android:layout_weight="20"
                         android:paddingLeft="5dp"
                         android:paddingTop="15dp"
                         android:paddingBottom="15dp"
-                        android:layout_weight="20"
                         android:clickable="true"
                         android:onClick="onGPS_IVClicked"
                         android:id="@+id/gps_icon_id"
@@ -206,7 +206,7 @@
                     <View
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="45"
+                        android:layout_weight="42"
                         />
                     <!-- Speed Text -->
                     <LinearLayout
@@ -240,14 +240,14 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="44"
+                    android:layout_weight="42"
                     android:orientation="horizontal"
                     android:weightSum="100"
                     >
                     <View
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="65"/>
+                        android:layout_weight="62"/>
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -306,13 +306,13 @@
                     <View
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="18"/>
+                        android:layout_weight="16"/>
                     <!-- Recording Time -->
                     <LinearLayout
                         android:orientation="vertical"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="17"
+                        android:layout_weight="18"
                         android:gravity="bottom|left"
                         >
                         <!--    RECORDING TIME -->
@@ -320,7 +320,11 @@
                             style="@style/timeRecordingTextOverCamera"
                             android:text="00:00"
                             android:id="@+id/tv_time_recording"
-                            android:visibility="invisible"
+                            android:visibility="visible"
+                            android:shadowColor="@color/shadowTextViewColor"
+                            android:shadowDx="2"
+                            android:shadowDy="2"
+                            android:shadowRadius="1"
                             />
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -332,7 +336,11 @@
                             <View
                                 style="@style/REC_circle"
                                 android:id="@+id/red_record_circle"
-                                android:visibility="invisible"
+                                android:visibility="visible"
+                                android:shadowColor="@color/shadowTextViewColor"
+                                android:shadowDx="2"
+                                android:shadowDy="2"
+                                android:shadowRadius="1"
                                 />
                             <!--     REC'ording RED TEXT -->
                             <TextView
@@ -340,7 +348,11 @@
                                 android:text="@string/REC"
                                 android:textColor="@color/redColor"
                                 android:id="@+id/tv_record"
-                                android:visibility="invisible"
+                                android:visibility="visible"
+                                android:shadowColor="@color/shadowTextViewColor"
+                                android:shadowDx="2"
+                                android:shadowDy="2"
+                                android:shadowRadius="1"
                                 />
                         </LinearLayout>
                     </LinearLayout>
@@ -348,7 +360,7 @@
                     <View
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="32"/>
+                        android:layout_weight="33"/>
                     <!-- Recording Time -->
                     <LinearLayout
                         android:orientation="vertical"
@@ -365,7 +377,7 @@
                             android:text="00 sec"
                             android:textColor="@color/secondtextOverCameraColor"
                             android:id="@+id/tv_time_to_shot_photo"
-                            android:visibility="invisible"
+                            android:visibility="visible"
                             android:shadowColor="@color/shadowTextViewColor"
                             android:shadowDy="2"
                             android:shadowDx="2"
@@ -386,12 +398,12 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="18" />
+                    android:layout_weight="19.5" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="29"
+                    android:layout_weight="26"
                     android:weightSum="100"
                     android:orientation="horizontal"
                     >
@@ -399,7 +411,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="40"
-                        android:src="@mipmap/left_top_viewfinder"
+                        android:src="@drawable/left_top"
                         />
                     <!-- Empty Space -->
                     <LinearLayout
@@ -411,7 +423,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="40"
-                        android:src="@mipmap/right_top_viewfinder"
+                        android:src="@drawable/right_top"
                         />
                 </LinearLayout>
                 <!-- empty SPACE -->
@@ -423,7 +435,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="29"
+                    android:layout_weight="26"
                     android:weightSum="100"
                     android:orientation="horizontal"
                     >
@@ -431,7 +443,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="40"
-                        android:src="@mipmap/left_bottom_viewfinder"
+                        android:src="@drawable/left_bottom"
                         />
                     <!-- Empty Space -->
                     <LinearLayout
@@ -443,7 +455,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="40"
-                        android:src="@mipmap/right_bottom_viewfinder"
+                        android:src="@drawable/right_bottom"
                         />
                 </LinearLayout>
                 <!-- empty SPACE -->

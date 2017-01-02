@@ -238,7 +238,7 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
                 minBitrate = (int) Math.ceil(sortedResolutionsL.get(videoQualityIndex - 3).width
                         *sortedResolutionsL.get(videoQualityIndex - 3).height
                         *30
-                        *StaticValues.bitrateMultiplication
+                        *StaticValues.getBitrateMultiplication()
                         *bitrateQualityMultipler
                 ); // round to ceil
 
@@ -252,7 +252,7 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
                         sortedResolutionsL.get(0).width
                         *sortedResolutionsL.get(0).height
                         *30
-                        *StaticValues.bitrateMultiplication
+                        *StaticValues.getBitrateMultiplication()
                         *bitrateQualityMultipler
                 ); // round to ceil
             }
@@ -266,7 +266,7 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
                         sortedResolutionsL.get(videoResolutionEntries_L.size() - 1).width
                             *sortedResolutionsL.get(videoResolutionEntries_L.size() - 1).height
                             *30
-                            *StaticValues.bitrateMultiplication
+                            *StaticValues.getBitrateMultiplication()
                             *bitrateQualityMultipler
                     ); // round to ceil
             }
@@ -548,7 +548,7 @@ public class VideoSettings extends PreferenceFragment implements SharedPreferenc
     }
     private void refreshEntriesAndEntryValuesForBitrate(int resWidth, int resHeight, int FPS) {
 
-        int bitRateVideoMin = (int) Math.ceil(resWidth*resHeight*FPS*StaticValues.bitrateMultiplication); // round to ceil
+        int bitRateVideoMin = (int) Math.ceil(resWidth*resHeight*FPS*StaticValues.getBitrateMultiplication()); // round to ceil
         bitrateEntries_L = new ArrayList<>();
 
         double [] bitrateMultiply = {3.0,2.5,2.0,1.5,1.0};

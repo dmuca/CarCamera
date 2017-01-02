@@ -5,6 +5,18 @@ package com.damianmuca.hoymm.kamerkasamochodowa;
  */
 
 public class StaticValues {
-    public static double bitrateMultiplication = 0.096;
+    private static double bitrateMultiplication = 0.096;
     static String [] mySubsettingsClassesNamesArray = null;
+
+    private static int latLongAccuracy = 5;
+
+    public static double getBitrateMultiplication() {
+        return bitrateMultiplication;
+    }
+
+    public static int getLatLongAccuracy() {
+        return latLongAccuracy;
+    }
 }
+
+

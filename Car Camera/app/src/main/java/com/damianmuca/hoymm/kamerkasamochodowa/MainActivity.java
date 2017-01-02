@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
     private LocationRequest locationRequest;
     private FusedLocationProviderApi locationProvider = LocationServices.FusedLocationApi;
     private Double myGPSLatitude, myGPSLongtitude;
+    private int latLongAccuracy;
 
     static private List<Camera.Size> cameraSizesL, photoSizesL;
     ArrayList<File> listOfVideoFiles = null, listOfPictureFiles = null;
@@ -140,8 +141,9 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
                 .addOnConnectionFailedListener(this)
                 .build();
         locationRequest = new LocationRequest();
-        locationRequest.setInterval(3 * 1000);  // in miliseconds
-        locationRequest.setFastestInterval(1000);
+        // GPS REFRESH INTERVAL
+        locationRequest.setInterval(30 * 1000);  // in miliseconds
+        locationRequest.setFastestInterval(10 * 1000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
 
@@ -151,6 +153,9 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
         latitudeTV = (TextView) findViewById(R.id.latitude_text_view_id);
         speedSectorVisibilityLL = (LinearLayout) findViewById(R.id.speed_sector_visibility_ll_id);
         coordsSectorVisibilityLL = (LinearLayout) findViewById(R.id.coords_sector_visibility_ll_id);
+
+        // Longtitude & Latitude accuracy after dot (TextViews)
+        latLongAccuracy = (int)(Math.pow(10,StaticValues.getLatLongAccuracy()));
 
         //...
         camViewPreview = (FrameLayout) findViewById(R.id.camera_preview);
@@ -200,91 +205,6 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
                 })).create();
         wrongEncoderOrResolution_AD
                 .setIcon(android.R.drawable.stat_sys_warning);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // A WARRNING BELOW
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         // need system permission to modify system settings ALERT DIALOG
         needSystemPermissionAD =
                 new AlertDialog.Builder(context).setTitle(R.string.app_needs_perm_to_wrk_properly)
@@ -292,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                // there is a WARRNING, but we INVOKE that alert dialog only when API >= 23
                                 Intent grantIntent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
                                 startActivity(grantIntent);
                             }
@@ -347,7 +268,6 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
         }
         return true;
     }
-
 
     private void initializatePicturesMaking() {
         final String TAG = "Picture Making: ";
@@ -499,7 +419,6 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
         return c; // returns null if camera is unavailable
     }
 
-
     protected void onDestroy() {
         // release CAMERA when close application
         if (myCameraObj != null) {
@@ -522,7 +441,6 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
     }
-
 
     // get NEEDED PERMISSIONS WHEN APP STARTS
     private boolean getPermissionsCamera() {
@@ -748,7 +666,6 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
     }
 
     private boolean dialogForGetPermissionIsCurShowing;
-
 
     @Override
     public void onRequestPermissionsResult
@@ -1159,14 +1076,14 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
             if (Integer.valueOf(videoQualityMode) >= 3) {
                 curVideoBitrateProfile = (int) Math.ceil(cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).width
                         * cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).height
-                        * frameRateProfile * StaticValues.bitrateMultiplication); // round to ceil
+                        * frameRateProfile * StaticValues.getBitrateMultiplication()); // round to ceil
                 curVideoBitrateProfile = (int) (curVideoBitrateProfile * bitrateMultiply[Integer.valueOf(bitrateIndex)]);
             }
             // Camera Custom Resolution Size
             if (Integer.valueOf(videoQualityMode) >= 3) {
                 curVideoBitrateProfile = (int) Math.ceil(cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).width
                         * cameraSizesL.get(Integer.valueOf(videoQualityMode) - 3).height
-                        * frameRateProfile * StaticValues.bitrateMultiplication); // round to ceil
+                        * frameRateProfile * StaticValues.getBitrateMultiplication()); // round to ceil
                 curVideoBitrateProfile = (int) (curVideoBitrateProfile * bitrateMultiply[Integer.valueOf(bitrateIndex)]);
             }
             // HQ res
@@ -1305,7 +1222,6 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
         return true;
     }
 
-
     // mute or unmute photography making sound
     public void photoSoundButtonClicked(View view) {
         ImageView photoSoundButton = (ImageView) view;
@@ -1347,7 +1263,6 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
             }
         }
     }
-
 
     private boolean CameraIsCurrentlyRecording;
     private Thread myThread = null;
@@ -1795,7 +1710,6 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
     KeyguardManager.KeyguardLock keyguardLock;
     private static SharedPreferences sharedPref;
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -2073,7 +1987,6 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
 
     }
 
-
     private void demandOrientationSettings() {
         String currentOrientationSettings = sharedPref
                 .getString(getResources().getString(R.string.SP_orientation), "0");
@@ -2107,7 +2020,6 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
 
         }
     }
-
 
     private void useAppBrightness() {
         if (sharedPref.getBoolean(getResources().getString(R.string.SP_general_brightness_seek_bar), false)) {
@@ -2501,12 +2413,17 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        // set ICON as connection failed
+        gpsIcon_IV.setImageDrawable(getResources().getDrawable(R.mipmap.gps_off_icon));
+        gpsIcon_IV.setAlpha(0.5f);
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+        // set ICON as connection failed
+        gpsIcon_IV.setImageDrawable(getResources().getDrawable(R.mipmap.gps_off_icon));
+        gpsIcon_IV.setAlpha(1.0f);
     }
 
     @Override
@@ -2515,11 +2432,17 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
         myGPSLongtitude = location.getLongitude();
 
         // REFRESH longtitude and latitude INFO on the panel
-        latitudeTV.setText(String.valueOf(myGPSLatitude));
-        longtitudeTV.setText(String.valueOf(myGPSLongtitude));
+        latitudeTV.setText(String.valueOf((Math.round(myGPSLatitude*latLongAccuracy))/(double)latLongAccuracy));
+        longtitudeTV.setText(String.valueOf((Math.round(myGPSLongtitude*latLongAccuracy))/(double)latLongAccuracy));
+
+
+        // set ICON as connection failed
+        gpsIcon_IV.setImageDrawable(getResources().getDrawable(R.mipmap.gps_icon));
+        gpsIcon_IV.setAlpha(1.0f);
     }
 
     public void onGPS_IVClicked(View view) {
         getGPSPermissions();
     }
+
 }
