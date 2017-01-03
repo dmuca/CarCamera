@@ -567,4 +567,5 @@
     <string name="access_fine_location_not_granted">ACCESS FINE LOCATION - Permission not granted.</string>
     <string name="access_coarse_location_permission_not_granted">ACCESS COARSE LOCATION - Permission not granted</string>
     <string name="location_permission_explanation">I need that permission to use GPS, so I can show your speed and position</string>
+    <string name="app_needs_cam_perm">This application needs camera access permission to work propely.</string>
 </resources>
