@@ -65,11 +65,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import static com.google.android.gms.location.LocationRequest.create;
+
 public class MainActivity extends AppCompatActivity implements Runnable, GoogleApiClient.ConnectionCallbacks
         , GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private AlertDialog noBackCameraOrInUse_AD, needSystemPermissionAD, wrongEncoderOrResolution_AD
-            , withoutCamPermissionAppCannotWork_AD, videoRecordPermissionsExplanationAD, photoTakingPermissionExplanationAD
-            , microphoneUsingPermissionExplanationAD, GPSPermissionNeedExplanationAD;
+            , withoutCamPermissionAppCannotWork_AD, videoRecordPermissionsExplanationAD
+            , photoTakingPermissionExplanationAD
+            , GPSPermissionNeedExplanationAD;
 
 
     // GPS Objects
@@ -98,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
     private LinearLayout llMain;
     private Camera.PictureCallback mPicture;    // picture making way
     public static Context context; // Camera SurfaceView object of class
+    private boolean cameraHasBeenInitializated = false;
 
 
     private static Camera myCameraObj;
@@ -201,11 +205,49 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
         // initializate alert dialog when no facing back camera found
         withoutCamPermissionAppCannotWork_AD = (builder.setMessage(R.string.app_needs_cam_perm)
                 .setCancelable(false)
-                .setIcon(android.R.drawable.stat_notify_error)
+                .setTitle(R.string.app_needs_permissions_to_work_properly)
+                .setIcon(android.R.drawable.ic_dialog_info)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         finish();
+                    }
+                })).create();
+
+
+        videoRecordPermissionsExplanationAD = (builder.setMessage
+                (getString(R.string.video_record_permission_explanation))
+                .setCancelable(false)
+                .setTitle(R.string.app_needs_permissions_to_work_properly)
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })).create();
+
+        photoTakingPermissionExplanationAD = (builder.setMessage
+                (getString(R.string.photo_taking_permission_explanation))
+                .setCancelable(false)
+                .setTitle(R.string.app_needs_permissions_to_work_properly)
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestPermissionNeededForVideoRecord();
+                    }
+                })).create();
+
+        GPSPermissionNeedExplanationAD = (builder.setMessage
+                (getString(R.string.gps_use_permission_explanation))
+                .setCancelable(false)
+                .setTitle(R.string.app_needs_permissions_to_work_properly)
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestPermissionNeededForGPS();
                     }
                 })).create();
 
@@ -218,6 +260,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        requestPermissionNeededForPhotosMaking();
                     }
                 })).create();
         wrongEncoderOrResolution_AD
@@ -470,20 +513,14 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
                 // Camera Permission Explanation
                 Toast.makeText(this, R.string.camera_permisssion_explanation, Toast.LENGTH_LONG)
                         .show();
-
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.CAMERA},
-                        MY_PERMISSIONS_REQUEST_CAMERA);
+                requestPermissionNeededForCamera();
 
             } else {
 
                 // No explanation needed, we can request the permission.
 
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.CAMERA},
-                        MY_PERMISSIONS_REQUEST_CAMERA);
 
-                // MY_PERMISSIONS_REQUEST_CAMERA is an
+                requestPermissionNeededForCamera();
                 // app-defined int constant. The callback method gets the
                 // result of the request.
             }
@@ -556,7 +593,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
                         new String[]{Manifest.permission.RECORD_AUDIO},
                         MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
 
-                // MY_PERMISSIONS_REQUEST_CAMERA is an
+                // MY_PERMISSIONS_REQUEST_RECORD_AUDIO is an
                 // app-defined int constant. The callback method gets the
                 // result of the request.
             }
@@ -617,15 +654,31 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
     @Override
     public void onRequestPermissionsResult
             (int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+
+        // Permission GRANTED
+        boolean permissionsGranted = true;
+
+        for (int current : grantResults)
+            if (current != PackageManager.PERMISSION_GRANTED) {
+                permissionsGranted = false;
+                break;
+            }
+
         switch (requestCode) {
             // ### ### ### CAMERA PERMISSIONS
-            case MY_PERMISSIONS_REQUEST_CAMERA: {
+            case MY_PERMISSIONS_REQUEST_CAMERA:
                 // Permission GRANTED
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (permissionsGranted) {
 
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                    //initializateMyCameraObj();    -- no need because it initializate itself dynamically
+
+
+                    /*if (initializateMyCameraObj()) {
+                        // GET CAMERA SETTINGS
+                        getCameraSettings();
+                    }*/
                 }
                 // PERMISSION NOT GRANTED
                 else {
@@ -636,33 +689,11 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }
-                return;
-            }
-            // ### ### ### WRITE EXTERNAL STORAGE PERMISSIONS
-            /*case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
-                // Permission GRANTED
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-                    initializateMyFileListsObjects();
-                    initializatePicturesMaking();
-                }
-                // PERMISSION NOT GRANTED
-                else {
-
-                    // WRITE EXTERNAL STORAGE Permission Explanation
-                    Toast.makeText(this, R.string.write_external_storage_permission_denied, Toast.LENGTH_LONG).show();
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }*/
-
+                break;
             // ### ### ### RECORD AUDIO PERMISSIONS
-            case MY_PERMISSIONS_REQUEST_RECORD_AUDIO: {
+            case MY_PERMISSIONS_REQUEST_RECORD_AUDIO:
                 // Permission GRANTED
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (permissionsGranted) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
                 }
@@ -680,11 +711,11 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }
-            }
+                break;
             // ### ### ### WRITE SETTINGS PERMISSIONS
-            case MY_PERMISSIONS_REQUEST_WRITE_SETTINGS: {
+            case MY_PERMISSIONS_REQUEST_WRITE_SETTINGS:
                 // Permission GRANTED
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (permissionsGranted) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
                     useAppBrightness();
@@ -696,48 +727,44 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }
-            }
+                break;
 
             // ### ### ### ACCESS COARSE LOCATION
-            case MY_PERMISSION_TO_USE_GPS: {
+            case MY_PERMISSION_TO_USE_GPS:
                 // Permission GRANTED
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (permissionsGranted) {
                 }
                 // PERMISSION NOT GRANTED
                 else {
-                    // Record Audio Permission Explanation
-                    //Toast.makeText(this, R.string.access_coarse_location_permission_not_granted, Toast.LENGTH_LONG).show();
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
                 }
-            }
+                break;
             // ### ### ### PERMISSION TO TAK PHOTOS
-            case MY_PERMISSION_NEEDED_TO_TAKE_PHOTOS: {
+            case MY_PERMISSION_NEEDED_TO_TAKE_PHOTOS:
                 // Permission GRANTED
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ifPermissionNeededToTakePhotograpiesGranted()) {
+
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+                        if (initializateMyCameraObj()) {
+                            // GET CAMERA SETTINGS
+                            getCameraSettings();
+                        }
+
                     takePhotograpiesAllowed();
                 }
                 // PERMISSION NOT GRANTED
                 else {
                 }
-            }
+                break;
             // ### ### ### RECORD VIDEO (Microphone/Cam/WriteExternalSettings/WriteStorage - permissions)
-            case MY_PERMISSION_NEEDED_TO_RECORD_VIDEO: {
-                // Permission GRANTED
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            case MY_PERMISSION_NEEDED_TO_RECORD_VIDEO:
+                if (permissionsGranted) {
                     recordVideoAllowed();
                 }
                 // PERMISSION NOT GRANTED
                 else {
 
-                    // WRITE EXTERNAL STORAGE Permission Explanation
-                    //Toast.makeText(this, R.string.write_external_storage_permission_denied, Toast.LENGTH_LONG).show();
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
                 }
-                return;
-            }
+                break;
         }
 
         // other 'case' lines to check for other
@@ -800,6 +827,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
                             ++change;
                         }
                 }
+                cameraHasBeenInitializated = true;
                 return true;
             }
             // when no CAMERA DEVICE
@@ -828,28 +856,43 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
     boolean makingPicturesActivated, makingVideoActivated;
 
     public void pictureMakingButtonClicked(View view) {
-
         // permission GRANTED program can make pictures
         if (ifPermissionNeededToTakePhotograpiesGranted()){
             takePhotograpiesAllowed();
         }
-        // if NO CAMERA PERMISSION GRANTED
+        // if NO WRITE_EXTERNAL_STORAGE PERMISSION GRANTED
         else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE
-                            , Manifest.permission.CAMERA
-                            , Manifest.permission.WRITE_SETTINGS
-                    },
-                    MY_PERMISSION_NEEDED_TO_TAKE_PHOTOS);
-
-            // check if APPLICATION CAN WRITE (it need permission from system settings (not normal permissions))
-            checkForSystemCanWrite();
-
+            // if >2 time (SHOW EXPLANATION)
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    ||ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_SETTINGS)) {
+                photoTakingPermissionExplanationAD.show();
+            }
+            // if 1 time
+            else {
+                requestPermissionNeededForPhotosMaking();
+                // check if APPLICATION CAN WRITE (it need permission from system settings (not normal permissions))
+                checkForSystemCanWrite();
+            }
         }
         lastPictureAtSeconds = 0;
     }
 
+    private void requestPermissionNeededForPhotosMaking() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        , Manifest.permission.CAMERA
+                        , Manifest.permission.WRITE_SETTINGS
+                },
+                MY_PERMISSION_NEEDED_TO_TAKE_PHOTOS);
+    }
+
     private void takePhotograpiesAllowed() {
+
+        // if it was not initializated previously... do it now
+        if (listOfVideoFiles == null) {
+            initializateMyFileListsObjects();
+            initializatePicturesMaking();
+        }
         makingPicturesActivated = !makingPicturesActivated;
 
         //set background color (gray - inactive / yellow - active)
@@ -875,16 +918,23 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
         }
         // if CAMERA RECORD PERMISSION NOT GRANTED
         else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE
-                            , Manifest.permission.CAMERA
-                            , Manifest.permission.RECORD_AUDIO
-                            , Manifest.permission.WRITE_SETTINGS
-                    },
-                    MY_PERMISSION_NEEDED_TO_RECORD_VIDEO);
 
-            // check if APPLICATION CAN WRITE (it need permission from system settings (not normal permissions))
-            checkForSystemCanWrite();
+            // if >2 time (SHOW EXPLANATION)
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    ||ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_SETTINGS)
+                    ||ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)
+                    ) {
+                videoRecordPermissionsExplanationAD.show();
+            }
+            // if 1 time
+            else {
+                requestPermissionNeededForVideoRecord();
+                // check if APPLICATION CAN WRITE (it need permission from system settings (not normal permissions))
+                checkForSystemCanWrite();
+            }
+
+
+
         }
 /*
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -937,6 +987,16 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
 
     }
 
+    private void requestPermissionNeededForVideoRecord() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        , Manifest.permission.CAMERA
+                        , Manifest.permission.RECORD_AUDIO
+                        , Manifest.permission.WRITE_SETTINGS
+                },
+                MY_PERMISSION_NEEDED_TO_RECORD_VIDEO);
+    }
+
     private void recordVideoAllowed() {
         // if it was not initializated previously... do it now
         if (listOfVideoFiles == null) {
@@ -952,12 +1012,10 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
         makingVideoActivated = !makingVideoActivated;
         RelativeLayout videoMakingButton = (RelativeLayout) findViewById(R.id.videocamera_button_bg_id);
         // make REC red circle and text, visible/invisible
-        // red circle shape
-        View vRedCircle = findViewById(R.id.red_record_circle);
-        vRedCircle.setVisibility(makingVideoActivated ? View.VISIBLE : View.INVISIBLE);
-        // red text
-        TextView tvRecText = (TextView) findViewById(R.id.tv_record);
-        tvRecText.setVisibility(makingVideoActivated ? View.VISIBLE : View.INVISIBLE);
+
+        // REC visibility
+        LinearLayout recTimingVisibility = (LinearLayout) findViewById(R.id.rec_text_id);
+        recTimingVisibility.setVisibility(makingVideoActivated ? View.VISIBLE : View.INVISIBLE);
 
         // HIDE record TIME ON SCREEN (TextView)
         if (!makingVideoActivated) {
@@ -1301,7 +1359,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
     private boolean CameraIsCurrentlyRecording;
     private Thread myThread = null;
     //SurfaceHolder myHolder;
-    private boolean isThatOk = false, switchBetweenTakingPhtAndVideo = false;
+    private boolean isThatOk = true, switchBetweenTakingPhtAndVideo = false;
     private double lastPictureAtSeconds;
     private double cameraRecordStartedAtSeconds;
 
@@ -1318,16 +1376,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
 
             // CAMERA Permission GRANTED
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                    == PackageManager.PERMISSION_GRANTED) {
-                // permission was granted, yay! Do the
-                // contacts-related task you need to do.
-                if (myCameraObj == null) {
-                    // only if INITIALIZING CAMERA was succesfull
-                    if (initializateMyCameraObj()) {
-                        // GET CAMERA SETTINGS
-                        getCameraSettings();
-                    }
-                }
+                    == PackageManager.PERMISSION_GRANTED && cameraHasBeenInitializated) {
 
 
                 /*if (getPermissionsWriteExternalStorage() && getPermissionToWriteSettings()){
@@ -1338,7 +1387,8 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
 
 
                 // Run enable only if all needed permissions are granted
-                if (ifPermissionNeededToRecordVideoGranted() && myCameraObj != null) {
+                if ((ifPermissionNeededToTakePhotograpiesGranted() || ifPermissionNeededToRecordVideoGranted())
+                        && myCameraObj != null) {
 
                     // change screen color (to normal, after photoshot effect brightnnes screen)
                     runOnUiThread(new Runnable() {
@@ -1359,7 +1409,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
                     demandOrientationSettings();
 
                     // switchBetweenTakingPhtAndVideo - you can either make photo or record video in one RUN ROUND
-                    if (switchBetweenTakingPhtAndVideo)
+                    if (switchBetweenTakingPhtAndVideo && ifPermissionNeededToTakePhotograpiesGranted())
                         synchronized (this) {
                             // REFRESH PICTURING
                             takingPictureRefresh();
@@ -1367,7 +1417,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
                             // refresh camera preview or screen will freeze
                             mPreview.previewCamera();
                         }
-                    else
+                    else if (ifPermissionNeededToRecordVideoGranted())
                         synchronized (this) {
                             // VIDEO RECORD
                             recordVideoRefresh();
@@ -1452,7 +1502,6 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
 
         checkForSystemCanWrite();
 
-
         return (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
                 PackageManager.PERMISSION_GRANTED &&
                 (ContextCompat.checkSelfPermission
@@ -1485,6 +1534,8 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
     private void takingPictureRefresh() {
         synchronized (this) {
             if (makingPicturesActivated) {
+
+
                 myCameraObj.startPreview();
                 try {
                     // show TIME over screen that left to TAKE ANOTHER PHOTO SHOT
@@ -1743,7 +1794,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
                 @Override
                 public void run() {
                     tv_phtTimeCounter.setVisibility(View.VISIBLE);
-                    tv_phtTimeCounter.setText(lastPictureTime);
+                    tv_phtTimeCounter.setText(String.valueOf(lastPictureTime));
                 }
             });
         } else
@@ -1786,6 +1837,28 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
 
     @Override
     protected void onResume() {
+        // get SharedPref
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+
+        // if API >= M permission granted in Manifest, if canWrite() is false then u cannot even use WRITE_SETTINGS
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M &&
+                Settings.System.canWrite(context) &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SETTINGS)
+                        == PackageManager.PERMISSION_GRANTED
+                )
+            useAppBrightness();
+
+        // only if INITIALIZING CAMERA was succesfull
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+            if (initializateMyCameraObj()) {
+                // GET CAMERA SETTINGS
+                getCameraSettings();
+            }
+
+
+        // GPS
+        googleApiClient.connect();
+
 
         refreshBottomResolutionsTV = true;
 
@@ -1797,10 +1870,6 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
 
         // shen we come back from "Can modify system settings options", let program check again permissions
         dialogForGetPermissionIsCurShowing = false;
-
-        // RUN function objects resume
-        myThread = new Thread(this);
-        myThread.start();
 
 
         // READ SHARED PREFERENCES DATA
@@ -1814,40 +1883,19 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
         }
 
         isThatOk = true;
+        // RUN function objects resume
+        myThread = new Thread(this);
+        myThread.start();
+
         super.onResume();
     }
 
     @Override
     protected void onStart() {
-        // get SharedPref
-        sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-
-
-
-        // if API >= M permission granted in Manifest, if canWrite() is false then u cannot even use WRITE_SETTINGS
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M &&
-                Settings.System.canWrite(context) &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SETTINGS)
-                        == PackageManager.PERMISSION_GRANTED
-                )
-            useAppBrightness();
-
-
-        // only if INITIALIZING CAMERA was succesfull
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-            if (initializateMyCameraObj()) {
-                // GET CAMERA SETTINGS
-                getCameraSettings();
-            }
+        super.onStart();
 
         // PERMISSIONS
         getPermissionsCamera();
-
-
-        // GPS
-        googleApiClient.connect();
-
-        super.onStart();
     }
 
     private void initializateMostImportantObjectForAppWorking() {
@@ -1869,30 +1917,6 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
 
         }
     }
-
-    private boolean getAllPermisions() {
-        // CAMERA permission
-        getPermissionsCamera();
-
-        // WRITE_EXTERNAL_STORAGE permission
-        getPermissionsWriteExternalStorage();
-
-        // RECORD_AUDIO permission
-        getPermissionsRecordAudio();
-
-
-        // WRITE_SETTINGS permission
-        getPermissionToWriteSettings();
-
-
-        // if PERMISSIONS are allowed from manifest (not dynamically), then use method to initializate objects
-        //initializateMostImportantObjectForAppWorking();
-        // in case API lvl <23 or permission granted, return true
-        return true;
-    }
-
-
-
 
     private void getCameraSettings() {
 
@@ -2505,19 +2529,30 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
         }
         // GPS permission not granted
         else{
-            // if >2 time
+            // if >2 time (SHOW EXPLANATION)
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION
-                                , Manifest.permission.ACCESS_FINE_LOCATION
-                        },
-                        MY_PERMISSION_TO_USE_GPS);
+                GPSPermissionNeedExplanationAD.show();
              }
             // if 1 time
             else{
-
+                requestPermissionNeededForGPS();
             }
         }
+    }
+
+    private void requestPermissionNeededForGPS() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION
+                        , Manifest.permission.ACCESS_FINE_LOCATION
+                },
+                MY_PERMISSION_TO_USE_GPS);
+    }
+
+
+    private void requestPermissionNeededForCamera() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.CAMERA},
+                MY_PERMISSIONS_REQUEST_CAMERA);
     }
 
     private boolean ifHavePermissionToAccessGPS() {

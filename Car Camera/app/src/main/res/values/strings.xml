@@ -568,4 +568,8 @@
     <string name="access_coarse_location_permission_not_granted">ACCESS COARSE LOCATION - Permission not granted</string>
     <string name="location_permission_explanation">I need that permission to use GPS, so I can show your speed and position</string>
     <string name="app_needs_cam_perm">This application needs camera access permission to work propely.</string>
+    <string name="video_record_permission_explanation">To record video application needs few permissions from your system, otherwise it\'ll not work. For more information check privacy policy on GooglePlay App</string>
+    <string name="photo_taking_permission_explanation">To take photos application needs few permissions from your system, otherwise it\'ll not work. For more information check privacy policy on GooglePlay App</string>
+    <string name="gps_use_permission_explanation">In order to show your speed and position application needs location permissions from your system, otherwise it\'ll not work. For more information check privacy policy on GooglePlay App</string>
+    <string name="app_needs_permissions_to_work_properly">Application needs some permission to work properly</string>
 </resources>
