@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        finish();
+                        requestPermissionNeededForCamera();
                     }
                 })).create();
 
@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        requestPermissionNeededForPhotosMaking();
                     }
                 })).create();
 
@@ -501,25 +501,15 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
     private boolean getPermissionsCamera() {
         // Here, thisActivity is the current activity -- CAMERA PERMISSION
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.CAMERA)) {
-
                 // Show an expanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
-
-                // Camera Permission Explanation
-                Toast.makeText(this, R.string.camera_permisssion_explanation, Toast.LENGTH_LONG)
-                        .show();
-                requestPermissionNeededForCamera();
-
+                withoutCamPermissionAppCannotWork_AD.show();
             } else {
-
                 // No explanation needed, we can request the permission.
-
-
                 requestPermissionNeededForCamera();
                 // app-defined int constant. The callback method gets the
                 // result of the request.
@@ -668,27 +658,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
         switch (requestCode) {
             // ### ### ### CAMERA PERMISSIONS
             case MY_PERMISSIONS_REQUEST_CAMERA:
-                // Permission GRANTED
-                if (permissionsGranted) {
 
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-
-
-                    /*if (initializateMyCameraObj()) {
-                        // GET CAMERA SETTINGS
-                        getCameraSettings();
-                    }*/
-                }
-                // PERMISSION NOT GRANTED
-                else {
-                    // Camera Permission Explanation
-
-                    withoutCamPermissionAppCannotWork_AD.show();
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
                 break;
             // ### ### ### RECORD AUDIO PERMISSIONS
             case MY_PERMISSIONS_REQUEST_RECORD_AUDIO:
@@ -822,7 +792,7 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
                 while (change > 0) {
                     change = 0;
                     for (int i = 0; i < photoSizesL.size() - 1; ++i)
-                        if (photoSizesL.get(i).width > photoSizesL.get(i + 1).width) {
+                        if (photoSizesL.get(i).width < photoSizesL.get(i + 1).width) {
                             Collections.swap(photoSizesL, i, i + 1);
                             ++change;
                         }
@@ -1896,26 +1866,6 @@ public class MainActivity extends AppCompatActivity implements Runnable, GoogleA
 
         // PERMISSIONS
         getPermissionsCamera();
-    }
-
-    private void initializateMostImportantObjectForAppWorking() {
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
-                PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
-                        PackageManager.PERMISSION_GRANTED) {
-
-
-            // if API >= M permission granted in Manifest, if canWrite() is false then u cannot even use WRITE_SETTINGS
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M &&
-                    Settings.System.canWrite(context) &&
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SETTINGS)
-                            == PackageManager.PERMISSION_GRANTED
-                    )
-                useAppBrightness();
-
-
-        }
     }
 
     private void getCameraSettings() {
